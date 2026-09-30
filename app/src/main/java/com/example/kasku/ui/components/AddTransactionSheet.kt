@@ -50,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -97,14 +98,14 @@ fun AddTransactionSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var entryMode by remember { mutableStateOf(EntryMode.MANUAL) }
-    var naturalLanguageInput by remember { mutableStateOf("") }
+    var naturalLanguageInput by rememberSaveable { mutableStateOf("") }
     var isAiParsing by remember { mutableStateOf(false) }
 
     var inputType by remember { mutableStateOf(initialType) }
-    var inputTitle by remember { mutableStateOf("") }
-    var inputAmount by remember { mutableStateOf("") }
-    var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
-    var selectedAccountId by remember { mutableStateOf<Long?>(null) }
+    var inputTitle by rememberSaveable { mutableStateOf("") }
+    var inputAmount by rememberSaveable { mutableStateOf("") }
+    var selectedCategoryId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var selectedAccountId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     // Filter kategori berdasarkan tipe yang dipilih (Pemasukan atau Pengeluaran)
     val filteredCategories = remember(categories, inputType) {

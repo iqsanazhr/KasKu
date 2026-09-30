@@ -560,7 +560,7 @@ fun MonzoTransactionCard(
     val isTransfer = transaction.type == TransactionType.TRANSFER
 
     val formattedDate = remember(transaction.date) {
-        val sdf = SimpleDateFormat("dd MMM yyyy • HH:mm", Locale.forLanguageTag("id-ID"))
+        val sdf = SimpleDateFormat("dd MMM yyyy • HH:mm", Locale("id", "ID"))
         sdf.format(Date(transaction.date))
     }
 

@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
@@ -32,6 +34,8 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -558,9 +562,9 @@ fun SettingsScreen(
                                 singleLine = true
                             )
 
-                            // Pilihan Model Gemini Cepat
+                            // Pilihan Model Gemini (Dropdown Menu Tanpa Emoticon)
                             Text(
-                                text = "Pilihan Model:",
+                                text = "Pilihan Model Gemini:",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MonzoTextPrimary,
@@ -568,37 +572,98 @@ fun SettingsScreen(
                                 )
                             )
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
+                            var isModelDropdownExpanded by remember { mutableStateOf(false) }
+                            val geminiModelOptions = remember {
                                 listOf(
-                                    "gemini-3.5-flash-lite" to "⚡ 3.5 Flash Lite (Rekomendasi)",
-                                    "gemini-2.5-flash" to "2.5 Flash"
-                                ).forEach { (modelId, label) ->
-                                    val isSelected = geminiModelInput == modelId
-                                    Surface(
+                                    "gemini-2.5-flash" to "Gemini 2.5 Flash (Rekomendasi Cepat)",
+                                    "gemini-2.5-flash-lite" to "Gemini 2.5 Flash Lite (Hemat Kuota)",
+                                    "gemini-2.5-pro" to "Gemini 2.5 Pro (Penalaran Kompleks)",
+                                    "gemini-1.5-flash" to "Gemini 1.5 Flash (Stabil)",
+                                    "gemini-1.5-pro" to "Gemini 1.5 Pro (Analisis Mendalam)"
+                                )
+                            }
+                            val selectedModelLabel = geminiModelOptions.firstOrNull { it.first == geminiModelInput }?.second
+                                ?: geminiModelInput.ifBlank { "Gemini 2.5 Flash (Rekomendasi Cepat)" }
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .clickable { isModelDropdownExpanded = true },
+                                    shape = RoundedCornerShape(14.dp),
+                                    color = MonzoElevated,
+                                    border = BorderStroke(1.dp, if (isModelDropdownExpanded) MonzoTeal else MonzoBorder)
+                                ) {
+                                    Row(
                                         modifier = Modifier
-                                            .weight(1f)
-                                            .clip(RoundedCornerShape(10.dp))
-                                            .clickable {
-                                                geminiModelInput = modelId
-                                                scope.launch { aiPreferences.saveGeminiConfig(geminiKeyInput, modelId) }
-                                            },
-                                        shape = RoundedCornerShape(10.dp),
-                                        color = if (isSelected) MonzoTealLight else MonzoElevated,
-                                        border = BorderStroke(1.dp, if (isSelected) MonzoTeal else MonzoBorder)
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(
-                                            text = label,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                            style = MaterialTheme.typography.labelSmall.copy(
-                                                color = if (isSelected) MonzoTeal else MonzoTextSecondary,
-                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                                fontSize = 10.5.sp
-                                            ),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = selectedModelLabel,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    color = MonzoTextPrimary,
+                                                    fontSize = 13.sp
+                                                ),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            Text(
+                                                text = "ID: ${geminiModelInput.ifBlank { "gemini-2.5-flash" }}",
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    color = MonzoTeal,
+                                                    fontSize = 11.sp
+                                                )
+                                            )
+                                        }
+                                        Icon(
+                                            imageVector = if (isModelDropdownExpanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                                            contentDescription = "Pilih Model",
+                                            tint = MonzoTextSecondary,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                }
+
+                                DropdownMenu(
+                                    expanded = isModelDropdownExpanded,
+                                    onDismissRequest = { isModelDropdownExpanded = false },
+                                    modifier = Modifier
+                                        .background(MonzoSurface)
+                                        .clip(RoundedCornerShape(14.dp))
+                                ) {
+                                    geminiModelOptions.forEach { (modelId, label) ->
+                                        val isSelected = geminiModelInput == modelId
+                                        DropdownMenuItem(
+                                            text = {
+                                                Column(modifier = Modifier.padding(vertical = 2.dp)) {
+                                                    Text(
+                                                        text = label,
+                                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                            color = if (isSelected) MonzoTeal else MonzoTextPrimary,
+                                                            fontSize = 13.sp
+                                                        )
+                                                    )
+                                                    Text(
+                                                        text = modelId,
+                                                        style = MaterialTheme.typography.labelSmall.copy(
+                                                            color = MonzoTextSecondary,
+                                                            fontSize = 11.sp
+                                                        )
+                                                    )
+                                                }
+                                            },
+                                            onClick = {
+                                                geminiModelInput = modelId
+                                                isModelDropdownExpanded = false
+                                                scope.launch { aiPreferences.saveGeminiConfig(geminiKeyInput, modelId) }
+                                            }
                                         )
                                     }
                                 }
@@ -802,79 +867,86 @@ fun SettingsScreen(
                                 )
                             )
                         }
+                    }
 
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                    // Baris Tombol Aksi Responsif (Mulai Tutorial & Reset Onboarding)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    scope.launch {
+                                        userPreferences.resetTutorial()
+                                        onNavigateToDashboard()
+                                    }
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            color = MonzoTealLight,
+                            border = BorderStroke(0.8.dp, MonzoTeal.copy(alpha = 0.35f))
                         ) {
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = MonzoTealLight,
-                                border = BorderStroke(0.8.dp, MonzoTeal.copy(alpha = 0.35f)),
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable {
-                                        scope.launch {
-                                            userPreferences.resetTutorial()
-                                            onNavigateToDashboard()
-                                        }
-                                    }
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.AutoAwesome,
-                                        contentDescription = null,
-                                        tint = MonzoTeal,
-                                        modifier = Modifier.size(13.dp)
+                                Icon(
+                                    imageVector = Icons.Filled.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = MonzoTeal,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Mulai Tutorial",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = MonzoTeal,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.5.sp
                                     )
-                                    Text(
-                                        text = "Mulai Tutorial",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            color = MonzoTeal,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 11.sp
-                                        )
-                                    )
-                                }
+                                )
                             }
+                        }
 
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = MonzoElevated,
-                                border = BorderStroke(0.5.dp, MonzoBorder),
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable {
-                                        scope.launch {
-                                            userPreferences.resetOnboarding()
-                                            showResetOnboardingSnackbar = true
-                                        }
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    scope.launch {
+                                        userPreferences.resetOnboarding()
+                                        showResetOnboardingSnackbar = true
                                     }
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            color = MonzoElevated,
+                            border = BorderStroke(0.8.dp, MonzoBorder)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
                             ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Refresh,
-                                        contentDescription = null,
-                                        tint = MonzoTextSecondary,
-                                        modifier = Modifier.size(13.dp)
+                                Icon(
+                                    imageVector = Icons.Filled.Refresh,
+                                    contentDescription = null,
+                                    tint = MonzoTextSecondary,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Reset Onboarding",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = MonzoTextSecondary,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 11.5.sp
                                     )
-                                    Text(
-                                        text = "Onboarding",
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            color = MonzoTextSecondary,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 11.sp
-                                        )
-                                    )
-                                }
+                                )
                             }
                         }
                     }

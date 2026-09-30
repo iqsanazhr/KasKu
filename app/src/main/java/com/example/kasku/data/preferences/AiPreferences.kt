@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "kasku_settings")
 
-class AiPreferences(private val context: Context) {
+class AiPreferences(val context: Context) {
     companion object {
         val KEY_AI_PROVIDER = stringPreferencesKey("ai_provider")
         val KEY_GEMINI_API_KEY = stringPreferencesKey("gemini_api_key")
@@ -35,7 +35,7 @@ class AiPreferences(private val context: Context) {
     }
 
     val geminiModelFlow: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[KEY_GEMINI_MODEL] ?: "gemini-3.5-flash-lite"
+        preferences[KEY_GEMINI_MODEL] ?: "gemini-2.5-flash"
     }
 
     val lmStudioUrlFlow: Flow<String> = context.dataStore.data.map { preferences ->

@@ -88,47 +88,47 @@ fun AiInsightsScreen(
 
     var selectedBarIndex by remember(selectedPeriod) { mutableIntStateOf(-1) }
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MonzoBackground)
     ) {
         // ==========================================
-        // 1. TOP HEADER BAR
-        // ==========================================
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp)
-        ) {
-            Text(
-                text = "Tren & Analitik Arus Kas",
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MonzoTextPrimary,
-                    fontSize = 22.sp
-                )
-            )
-            Text(
-                text = "Grafik & rincian komparasi pemasukan vs pengeluaran Anda",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MonzoTextSecondary,
-                    fontSize = 12.5.sp
-                )
-            )
-        }
-
-        // ==========================================
-        // 2. MAIN SCROLLABLE CONTENT
+        // MAIN SCROLLABLE CONTENT
         // ==========================================
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             // ==========================================
-            // KARTU GRAFIK MINGGUAN & BULANAN (PALING ATAS)
+            // 1. TOP HEADER TITLE (Selaras dengan Riwayat & Pengaturan)
+            // ==========================================
+            item {
+                Spacer(modifier = Modifier.height(14.dp))
+                Column {
+                    Text(
+                        text = "Grafik & Analisis",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MonzoTextSecondary,
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                    Text(
+                        text = "Tren & Analitik Arus Kas",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MonzoTextPrimary,
+                            fontSize = 23.sp
+                        )
+                    )
+                }
+            }
+
+            // ==========================================
+            // 2. KARTU GRAFIK MINGGUAN & BULANAN (PALING ATAS)
             // ==========================================
             item {
                 Surface(

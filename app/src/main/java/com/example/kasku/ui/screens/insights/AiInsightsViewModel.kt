@@ -3,6 +3,9 @@ package com.example.kasku.ui.screens.insights
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.kasku.data.local.ChatHistoryManager
+import com.example.kasku.data.local.ChatMessageSerializable
+import com.example.kasku.data.local.ChatSessionItem
 import com.example.kasku.data.preferences.AiPreferences
 import com.example.kasku.data.remote.AiService
 import com.example.kasku.data.repository.KasKuRepository
@@ -59,6 +62,8 @@ class AiInsightsViewModel(
     private val aiPreferences: AiPreferences
 ) : ViewModel() {
 
+    val chatHistoryManager = ChatHistoryManager(aiPreferences.context)
+
     val transactions: StateFlow<List<Transaction>> = repository.getAllTransactions()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -73,11 +78,35 @@ class AiInsightsViewModel(
     private val _chatMessages = MutableStateFlow<List<ChatMessage>>(listOf(initialGreeting))
     val chatMessages: StateFlow<List<ChatMessage>> = _chatMessages.asStateFlow()
 
+    private val _chatSessions = MutableStateFlow<List<ChatSessionItem>>(emptyList())
+    val chatSessions: StateFlow<List<ChatSessionItem>> = _chatSessions.asStateFlow()
+
+    private val _currentSessionId = MutableStateFlow<String>("")
+    val currentSessionId: StateFlow<String> = _currentSessionId.asStateFlow()
+
     private val _isAnsweringQuestion = MutableStateFlow(false)
     val isAnsweringQuestion: StateFlow<Boolean> = _isAnsweringQuestion.asStateFlow()
 
     private val _selectedPeriod = MutableStateFlow(ChartPeriod.WEEKLY)
     val selectedPeriod: StateFlow<ChartPeriod> = _selectedPeriod.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val savedSessions = chatHistoryManager.loadSessions()
+            if (savedSessions.isNotEmpty()) {
+                _chatSessions.value = savedSessions
+                val firstSession = savedSessions.first()
+                _currentSessionId.value = firstSession.id
+                _chatMessages.value = if (firstSession.messages.isNotEmpty()) {
+                    firstSession.messages.map { it.toDomain() }
+                } else {
+                    listOf(initialGreeting)
+                }
+            } else {
+                createNewSession()
+            }
+        }
+    }
 
     fun setChartPeriod(period: ChartPeriod) {
         _selectedPeriod.value = period
@@ -85,7 +114,7 @@ class AiInsightsViewModel(
 
     fun getWeeklyData(txList: List<Transaction>): List<CashFlowBarData> {
         val list = mutableListOf<CashFlowBarData>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.forLanguageTag("id-ID"))
+        val dayFormat = SimpleDateFormat("EEE", Locale("id", "ID"))
 
         for (i in 6 downTo 0) {
             val cal = Calendar.getInstance().apply {
@@ -179,10 +208,89 @@ class AiInsightsViewModel(
             .sortedByDescending { it.totalAmount }
     }
 
+    fun createNewSession() {
+        val newSessionId = UUID.randomUUID().toString()
+        val newSession = ChatSessionItem(
+            id = newSessionId,
+            title = "Obrolan Baru",
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+            messages = listOf(ChatMessageSerializable.fromDomain(initialGreeting))
+        )
+        val updated = listOf(newSession) + _chatSessions.value
+        _chatSessions.value = updated
+        _currentSessionId.value = newSessionId
+        _chatMessages.value = listOf(initialGreeting)
+        viewModelScope.launch {
+            chatHistoryManager.saveSessions(updated)
+        }
+    }
+
+    fun selectSession(sessionId: String) {
+        val session = _chatSessions.value.firstOrNull { it.id == sessionId } ?: return
+        _currentSessionId.value = sessionId
+        _chatMessages.value = if (session.messages.isNotEmpty()) {
+            session.messages.map { it.toDomain() }
+        } else {
+            listOf(initialGreeting)
+        }
+    }
+
+    fun deleteSession(sessionId: String) {
+        val updated = _chatSessions.value.filter { it.id != sessionId }
+        _chatSessions.value = updated
+        viewModelScope.launch {
+            chatHistoryManager.saveSessions(updated)
+        }
+        if (_currentSessionId.value == sessionId) {
+            if (updated.isNotEmpty()) {
+                selectSession(updated.first().id)
+            } else {
+                createNewSession()
+            }
+        }
+    }
+
+    fun clearAllHistory() {
+        viewModelScope.launch {
+            chatHistoryManager.clearAll()
+            _chatSessions.value = emptyList()
+            createNewSession()
+        }
+    }
+
+    private fun persistCurrentSession(customTitle: String? = null) {
+        val currId = _currentSessionId.value
+        val serializableMsgs = _chatMessages.value.map { ChatMessageSerializable.fromDomain(it) }
+        val updated = _chatSessions.value.map { session ->
+            if (session.id == currId) {
+                session.copy(
+                    title = customTitle ?: session.title,
+                    updatedAt = System.currentTimeMillis(),
+                    messages = serializableMsgs
+                )
+            } else {
+                session
+            }
+        }
+        _chatSessions.value = updated
+        viewModelScope.launch {
+            chatHistoryManager.saveSessions(updated)
+        }
+    }
+
     fun sendMessage(question: String) {
         if (question.isBlank() || _isAnsweringQuestion.value) return
         val userMsg = ChatMessage(sender = ChatSender.USER, text = question.trim())
         _chatMessages.value = _chatMessages.value + userMsg
+
+        val currSession = _chatSessions.value.firstOrNull { it.id == _currentSessionId.value }
+        val sessionTitle = if (currSession == null || currSession.title == "Obrolan Baru") {
+            question.trim().take(30)
+        } else {
+            currSession.title
+        }
+        persistCurrentSession(sessionTitle)
 
         viewModelScope.launch {
             _isAnsweringQuestion.value = true
@@ -258,11 +366,13 @@ class AiInsightsViewModel(
                     "Maaf, gagal memproses pertanyaan (${err.localizedMessage ?: "Koneksi bermasalah"}). Pastikan API Key Gemini atau LM Studio sudah diatur di menu Pengaturan."
                 }
                 _chatMessages.value = _chatMessages.value + ChatMessage(sender = ChatSender.AI, text = answerText)
+                persistCurrentSession(sessionTitle)
             } catch (e: Exception) {
                 _chatMessages.value = _chatMessages.value + ChatMessage(
                     sender = ChatSender.AI,
                     text = "Terjadi kesalahan: ${e.localizedMessage}. Silakan coba lagi nanti."
                 )
+                persistCurrentSession(sessionTitle)
             } finally {
                 _isAnsweringQuestion.value = false
             }
@@ -271,6 +381,7 @@ class AiInsightsViewModel(
 
     fun clearChat() {
         _chatMessages.value = listOf(initialGreeting)
+        persistCurrentSession()
     }
 
     class Factory(

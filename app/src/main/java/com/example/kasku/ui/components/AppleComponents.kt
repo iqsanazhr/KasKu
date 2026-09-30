@@ -52,7 +52,7 @@ import java.util.Locale
 
 // Rupiah Currency Formatter
 fun formatRupiah(amount: Double, withPrefix: Boolean = true): String {
-    val localeId = Locale.forLanguageTag("id-ID")
+    val localeId = Locale("id", "ID")
     val format = NumberFormat.getNumberInstance(localeId)
     val formattedNumber = format.format(amount)
     return if (withPrefix) "Rp $formattedNumber" else formattedNumber

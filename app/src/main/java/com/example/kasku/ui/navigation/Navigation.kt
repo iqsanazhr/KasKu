@@ -1,26 +1,37 @@
 package com.example.kasku.ui.navigation
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DocumentScanner
-import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,24 +42,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kasku.ui.theme.MonzoBorder
-import com.example.kasku.ui.theme.MonzoSurface
-import com.example.kasku.ui.theme.MonzoTeal
-import com.example.kasku.ui.theme.MonzoTextSecondary
-
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.ui.draw.clip
+import com.example.kasku.ui.theme.CeramicBackground
 
 sealed class Screen(
     val route: String,
@@ -58,11 +61,11 @@ sealed class Screen(
     val isAiSpecial: Boolean = false
 ) {
     object Dashboard : Screen("dashboard", "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object Transactions : Screen("transactions", "Transaksi", Icons.Filled.SwapHoriz, Icons.Outlined.SwapHoriz)
+    object Transactions : Screen("transactions", "Riwayat", Icons.Filled.SwapHoriz, Icons.Outlined.SwapHoriz)
     object Scanner : Screen("scanner", "Scan", Icons.Filled.DocumentScanner, Icons.Outlined.DocumentScanner, isAiSpecial = true)
-    object Insights : Screen("insights", "Trends", Icons.AutoMirrored.Filled.TrendingUp, Icons.AutoMirrored.Outlined.TrendingUp)
+    object Insights : Screen("insights", "Tren", Icons.AutoMirrored.Filled.TrendingUp, Icons.AutoMirrored.Outlined.TrendingUp)
     object AiChat : Screen("ai_chat", "KasKu AI", Icons.Filled.AutoAwesome, Icons.Outlined.AutoAwesome, isAiSpecial = true)
-    object Settings : Screen("settings", "Pengaturan", Icons.Filled.Settings, Icons.Outlined.Settings)
+    object Settings : Screen("settings", "Setelan", Icons.Filled.Settings, Icons.Outlined.Settings)
 }
 
 val navItems = listOf(
@@ -74,124 +77,141 @@ val navItems = listOf(
 )
 
 /**
- * Authentic Monzo Banking Bottom Navigation Bar
+ * Telegram iOS Solid Capsule Bottom Bar
+ * - Bentuk Kapsul Mengambang (Floating Pill Capsule)
+ * - Solid Opaque (100% Tidak Transparan) sehingga teks & kartu di belakang tertutup rapat
+ * - Border kontras tegas (1.2 dp) & Shadow 16 dp agar menu tetap terpisah jelas di atas latar putih
+ * - Tata letak 1:1 Telegram: Ikon di atas, teks nama menu di bawahnya
+ * - Aksen aktif: Telegram Light Blue (#0088CC) dengan background pill lembut (#EBF5FB)
+ * - Warna inaktif: Slate 500 (#64748B) untuk keterbacaan tajam
  */
 @Composable
-fun AppleFloatingBottomBar(
+fun TelegramLiquidGlassBottomBar(
     currentRoute: String,
     onNavigate: (Screen) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 6.dp,
-                ambientColor = Color(0x08000000),
-                spotColor = Color(0x10000000)
-            ),
-        color = MonzoSurface,
-        border = BorderStroke(0.5.dp, MonzoBorder)
+    val telegramLightBlue = Color(0xFF0088CC) // Telegram iOS Light Blue
+    val telegramInactive = Color(0xFF64748B)  // Slate 500: Tajam & terbaca jelas
+
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Row(
+        // Kapsul Solid (Tidak transparan, kontras tegas di latar putih)
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(vertical = 5.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(36.dp),
+                    ambientColor = Color(0x30000000),
+                    spotColor = Color(0x40000000)
+                ),
+            shape = RoundedCornerShape(36.dp),
+            color = Color.White, // 100% Solid Putih Opaque (Tidak tembus pandang)
+            border = BorderStroke(0.5.dp, Color(0xFFD1D9E0)) // Hairline border ultra-tipis (0.5 dp)
         ) {
-            navItems.forEach { screen ->
-                val isSelected = currentRoute == screen.route
-                val isCenterScan = screen == Screen.Scanner
+            // Susunan 1:1 Tab Menu Telegram (Ikon di atas, nama menu di bawah)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                navItems.forEach { screen ->
+                    val isSelected = currentRoute == screen.route
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
 
-                if (isCenterScan) {
-                    // Tombol Tengah: Scan Sentral Beraksen
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) {
-                                onNavigate(screen)
-                            }
-                            .padding(vertical = 1.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Surface(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .shadow(
-                                    elevation = if (isSelected) 6.dp else 2.dp,
-                                    shape = CircleShape,
-                                    ambientColor = Color(0x33106B82),
-                                    spotColor = Color(0x4D106B82)
-                                ),
-                            shape = CircleShape,
-                            color = if (isSelected) MonzoTeal else Color(0xFF172E38)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = screen.selectedIcon,
-                                    contentDescription = screen.title,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(21.dp)
-                                )
-                            }
-                        }
+                    val scale by animateFloatAsState(
+                        targetValue = if (isPressed) 0.88f else 1.0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        label = "tabScale_${screen.route}"
+                    )
 
-                        Text(
-                            text = screen.title,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 10.5.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) MonzoTeal else MonzoTextSecondary
-                            ),
-                            maxLines = 1,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                    }
-                } else {
-                    val iconColor by animateColorAsState(
-                        targetValue = if (isSelected) MonzoTeal else MonzoTextSecondary.copy(alpha = 0.8f),
-                        label = "iconColor"
+                    val itemColor by animateColorAsState(
+                        targetValue = if (isSelected) telegramLightBlue else telegramInactive,
+                        animationSpec = spring(stiffness = Spring.StiffnessLow),
+                        label = "tabColor_${screen.route}"
                     )
 
                     Column(
                         modifier = Modifier
                             .weight(1f)
+                            .scale(scale)
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(
+                                if (isSelected) Color(0xFFEBF5FB) else Color.Transparent
+                            )
                             .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) {
-                                onNavigate(screen)
-                            }
+                                interactionSource = interactionSource,
+                                indication = null,
+                                onClick = { onNavigate(screen) }
+                            )
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        // Logo / Ikon Menu di Atas
                         Icon(
                             imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
                             contentDescription = screen.title,
-                            tint = iconColor,
+                            tint = itemColor,
                             modifier = Modifier.size(23.dp)
                         )
 
+                        Spacer(modifier = Modifier.height(2.5.dp))
+
+                        // Nama Menu di Bawah Logo
                         Text(
                             text = screen.title,
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontSize = 11.sp,
+                                fontSize = 10.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = iconColor
+                                letterSpacing = (-0.2).sp
                             ),
-                            maxLines = 1,
-                            modifier = Modifier.padding(top = 3.dp)
+                            color = itemColor,
+                            maxLines = 1
                         )
                     }
                 }
             }
         }
     }
+}
+
+/**
+ * Backward-compatibility aliases
+ */
+@Composable
+fun IPhoneDynamicIslandBottomBar(
+    currentRoute: String,
+    onNavigate: (Screen) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TelegramLiquidGlassBottomBar(
+        currentRoute = currentRoute,
+        onNavigate = onNavigate,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AppleFloatingBottomBar(
+    currentRoute: String,
+    onNavigate: (Screen) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TelegramLiquidGlassBottomBar(
+        currentRoute = currentRoute,
+        onNavigate = onNavigate,
+        modifier = modifier
+    )
 }

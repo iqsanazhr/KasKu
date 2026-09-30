@@ -162,7 +162,7 @@ fun DashboardScreen(
 
     val weeklyCashFlowData = remember(allTransactions) {
         val list = mutableListOf<DayCashFlow>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.forLanguageTag("id-ID"))
+        val dayFormat = SimpleDateFormat("EEE", Locale("id", "ID"))
 
         for (i in 6 downTo 0) {
             val cal = java.util.Calendar.getInstance().apply {
