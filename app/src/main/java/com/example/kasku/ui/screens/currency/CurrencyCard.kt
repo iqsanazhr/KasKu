@@ -166,7 +166,11 @@ fun CurrencyExchangeCard(
                     val myrRate = rates["MYR"] ?: 0.0
 
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        CurrencyRateRow(symbol = "🇺🇸 1 USD ➔ 🇮🇩 IDR", value = formatRupiah(idrRate), isPrimary = true)
+                        CurrencyRateRow(
+                            symbol = "🇺🇸 1 USD ➔ 🇮🇩 IDR",
+                            value = formatRupiah(idrRate, withPrefix = true, currencyCode = "IDR", alreadyConverted = true),
+                            isPrimary = true
+                        )
                         CurrencyRateRow(symbol = "🇪🇺 1 USD ➔ 🇪🇺 EUR", value = "€ ${String.format(Locale.US, "%.3f", eurRate)}")
                         CurrencyRateRow(symbol = "🇸🇬 1 USD ➔ 🇸🇬 SGD", value = "S$ ${String.format(Locale.US, "%.3f", sgdRate)}")
                         CurrencyRateRow(symbol = "🇲🇾 1 USD ➔ 🇲🇾 MYR", value = "RM ${String.format(Locale.US, "%.3f", myrRate)}")

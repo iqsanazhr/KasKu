@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,12 +59,25 @@ import com.example.kasku.ui.theme.MonzoTextPrimary
 import com.example.kasku.ui.theme.MonzoTextSecondary
 import kotlin.math.max
 
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import com.example.kasku.data.preferences.UserPreferences
+import com.example.kasku.ui.components.FeatureTutorialOverlay
+import com.example.kasku.ui.components.TutorialStep
+import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+
 @Composable
 fun AiInsightsScreen(
     repository: KasKuRepository,
     aiService: AiService,
     aiPreferences: AiPreferences,
     modifier: Modifier = Modifier,
+    userPreferences: UserPreferences? = null,
     viewModel: AiInsightsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = AiInsightsViewModel.Factory(repository, aiService, aiPreferences)
     )
@@ -88,10 +102,64 @@ fun AiInsightsScreen(
 
     var selectedBarIndex by remember(selectedPeriod) { mutableIntStateOf(-1) }
 
+    val isTutorialCompleted by (userPreferences?.isTutorialInsightsCompletedFlow ?: remember { kotlinx.coroutines.flow.flowOf(true) })
+        .collectAsState(initial = true)
+    var currentTutorialStepIndex by remember { mutableIntStateOf(0) }
+    val coroutineScope = rememberCoroutineScope()
+
+    var rootCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var chartCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var categoryCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var detailsCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+
+    var chartBounds by remember { mutableStateOf<Rect?>(null) }
+    var categoryBounds by remember { mutableStateOf<Rect?>(null) }
+    var detailsBounds by remember { mutableStateOf<Rect?>(null) }
+
+    fun updateAllBounds(root: LayoutCoordinates) {
+        if (!root.isAttached) return
+        chartCoords?.takeIf { it.isAttached }?.let { chartBounds = root.localBoundingBoxOf(it, false) }
+        categoryCoords?.takeIf { it.isAttached }?.let { categoryBounds = root.localBoundingBoxOf(it, false) }
+        detailsCoords?.takeIf { it.isAttached }?.let { detailsBounds = root.localBoundingBoxOf(it, false) }
+    }
+
+    val tutorialSteps = remember(chartBounds, categoryBounds, detailsBounds) {
+        listOf(
+            TutorialStep(
+                id = "insights_chart",
+                title = "Grafik Arus Kas Interaktif",
+                description = "Bandingkan rasio pemasukan dan pengeluaran harian atau mingguan. Ketuk batang diagram untuk melihat angka surplus atau defisit secara detail.",
+                category = "Visualisasi",
+                icon = Icons.Default.BarChart,
+                targetRect = chartBounds
+            ),
+            TutorialStep(
+                id = "insights_category",
+                title = "Distribusi Pengeluaran Kategori",
+                description = "Pelajari alokasi persentase pengeluaran Anda. Temukan kategori mana yang paling menyerap anggaran Anda dalam periode ini.",
+                category = "Kategori",
+                icon = Icons.Default.PieChart,
+                targetRect = categoryBounds
+            ),
+            TutorialStep(
+                id = "insights_details",
+                title = "Rincian Mutasi Arus Kas",
+                description = "Cek riwayat surplus atau defisit per hari atau per pekan dengan indikator tren keuangan yang jelas.",
+                category = "Rincian",
+                icon = Icons.AutoMirrored.Filled.ListAlt,
+                targetRect = detailsBounds
+            )
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MonzoBackground)
+            .onGloballyPositioned { root ->
+                rootCoordinates = root
+                updateAllBounds(root)
+            }
     ) {
         // ==========================================
         // MAIN SCROLLABLE CONTENT
@@ -139,7 +207,15 @@ fun AiInsightsScreen(
                             shape = RoundedCornerShape(24.dp),
                             ambientColor = Color(0x0A000000),
                             spotColor = Color(0x14000000)
-                        ),
+                        )
+                        .onGloballyPositioned { coords ->
+                            chartCoords = coords
+                            rootCoordinates?.let { root ->
+                                if (root.isAttached && coords.isAttached) {
+                                    chartBounds = root.localBoundingBoxOf(coords, false)
+                                }
+                            }
+                        },
                     shape = RoundedCornerShape(24.dp),
                     color = MonzoSurface,
                     border = BorderStroke(1.dp, MonzoBorder)
@@ -387,7 +463,15 @@ fun AiInsightsScreen(
                             shape = RoundedCornerShape(24.dp),
                             ambientColor = Color(0x0A000000),
                             spotColor = Color(0x14000000)
-                        ),
+                        )
+                        .onGloballyPositioned { coords ->
+                            categoryCoords = coords
+                            rootCoordinates?.let { root ->
+                                if (root.isAttached && coords.isAttached) {
+                                    categoryBounds = root.localBoundingBoxOf(coords, false)
+                                }
+                            }
+                        },
                     shape = RoundedCornerShape(24.dp),
                     color = MonzoSurface,
                     border = BorderStroke(1.dp, MonzoBorder)
@@ -546,7 +630,15 @@ fun AiInsightsScreen(
                             shape = RoundedCornerShape(24.dp),
                             ambientColor = Color(0x0A000000),
                             spotColor = Color(0x14000000)
-                        ),
+                        )
+                        .onGloballyPositioned { coords ->
+                            detailsCoords = coords
+                            rootCoordinates?.let { root ->
+                                if (root.isAttached && coords.isAttached) {
+                                    detailsBounds = root.localBoundingBoxOf(coords, false)
+                                }
+                            }
+                        },
                     shape = RoundedCornerShape(24.dp),
                     color = MonzoSurface,
                     border = BorderStroke(1.dp, MonzoBorder)
@@ -744,6 +836,28 @@ fun AiInsightsScreen(
             item {
                 Spacer(modifier = Modifier.height(130.dp))
             }
+        }
+
+        // Overlay Tutorial Interaktif Tren / Analitik
+        if (!isTutorialCompleted && userPreferences != null) {
+            FeatureTutorialOverlay(
+                steps = tutorialSteps,
+                currentStepIndex = currentTutorialStepIndex,
+                onNextStep = {
+                    if (currentTutorialStepIndex < tutorialSteps.size - 1) {
+                        currentTutorialStepIndex++
+                    } else {
+                        coroutineScope.launch {
+                            userPreferences.setTutorialInsightsCompleted(true)
+                        }
+                    }
+                },
+                onSkipTutorial = {
+                    coroutineScope.launch {
+                        userPreferences.setTutorialInsightsCompleted(true)
+                    }
+                }
+            )
         }
     }
 }

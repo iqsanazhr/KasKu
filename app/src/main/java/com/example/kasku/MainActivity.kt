@@ -224,6 +224,7 @@ fun MainAppContainer(
                     repository = repository,
                     aiService = aiService,
                     aiPreferences = aiPreferences,
+                    userPreferences = userPreferences,
                     onTransactionClick = { txId ->
                         navController.navigate(Screen.TransactionDetail.createRoute(txId))
                     }
@@ -259,7 +260,8 @@ fun MainAppContainer(
                 AiInsightsScreen(
                     repository = repository,
                     aiService = aiService,
-                    aiPreferences = aiPreferences
+                    aiPreferences = aiPreferences,
+                    userPreferences = userPreferences
                 )
             }
             composable(Screen.AiChat.route) {

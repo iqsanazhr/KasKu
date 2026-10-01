@@ -374,17 +374,27 @@ fun AddTransactionSheet(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // 2. Input Nominal (Rp)
+                // 2. Input Nominal (Dinamis sesuai Mata Uang Aktif)
+                val activeCurrencyCode = CurrencyConfig.currentCurrency
+                val activeCurrencySymbol = CurrencyConfig.getSymbol().trim()
+                val isDecimalsAllowed = activeCurrencyCode != "IDR" && activeCurrencyCode != "JPY"
+
                 OutlinedTextField(
                     value = inputAmount,
                     onValueChange = { str ->
-                        if (str.all { it.isDigit() }) inputAmount = str
+                        if (isDecimalsAllowed) {
+                            if (str.count { it == '.' } <= 1 && str.all { it.isDigit() || it == '.' }) {
+                                inputAmount = str
+                            }
+                        } else {
+                            if (str.all { it.isDigit() }) inputAmount = str
+                        }
                     },
-                    label = { Text("Nominal") },
+                    label = { Text("Nominal ($activeCurrencyCode)") },
                     placeholder = { Text("0") },
                     leadingIcon = {
                         Text(
-                            text = "Rp",
+                            text = activeCurrencySymbol,
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = if (inputType == TransactionType.EXPENSE) MonzoExpenseRed else MonzoIncomeGreen
@@ -392,7 +402,7 @@ fun AddTransactionSheet(
                             modifier = Modifier.padding(start = 14.dp, end = 4.dp)
                         )
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = if (isDecimalsAllowed) KeyboardType.Decimal else KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -400,6 +410,20 @@ fun AddTransactionSheet(
                         unfocusedBorderColor = Color(0xFFD6DFD9)
                     )
                 )
+
+                if (activeCurrencyCode != "IDR" && inputAmount.isNotBlank()) {
+                    val rawVal = inputAmount.toDoubleOrNull() ?: 0.0
+                    val inIdr = CurrencyConfig.convertToIdr(rawVal)
+                    Text(
+                        text = "≈ Rp ${formatRupiah(inIdr, withPrefix = false, currencyCode = "IDR", alreadyConverted = true)} (disimpan ke basis data IDR)",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = MonzoTeal,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        modifier = Modifier.padding(start = 6.dp, top = 2.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -633,7 +657,8 @@ fun AddTransactionSheet(
 
                 Button(
                     onClick = {
-                        val amount = inputAmount.toDoubleOrNull() ?: 0.0
+                        val enteredAmount = inputAmount.toDoubleOrNull() ?: 0.0
+                        val amount = CurrencyConfig.convertToIdr(enteredAmount)
                         val catId = selectedCategoryId
                         val accId = selectedAccountId
                         if (canSave && catId != null && accId != null) {

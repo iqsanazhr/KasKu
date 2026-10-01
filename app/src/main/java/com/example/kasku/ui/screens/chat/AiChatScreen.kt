@@ -102,6 +102,16 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.runtime.mutableIntStateOf
+import com.example.kasku.ui.components.FeatureTutorialOverlay
+import com.example.kasku.ui.components.TutorialStep
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.Send
+
 /**
  * KasKu AI Chat Screen - Desain Layout 1:1 Gemini App
  * Dilengkapi Drawer Riwayat Chat di sebelah kiri, Floating Header Minimalis tanpa Badge Online,
@@ -149,6 +159,66 @@ fun AiChatScreen(
 
     val isKeyboardOpen = WindowInsets.isImeVisible
 
+    val isTutorialCompleted by (userPreferences?.isTutorialAiChatCompletedFlow ?: remember { kotlinx.coroutines.flow.flowOf(true) })
+        .collectAsState(initial = true)
+    var currentTutorialStepIndex by remember { mutableIntStateOf(0) }
+
+    var rootCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var drawerButtonCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var headerCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var promptsCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var inputCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+
+    var drawerButtonBounds by remember { mutableStateOf<Rect?>(null) }
+    var headerBounds by remember { mutableStateOf<Rect?>(null) }
+    var promptsBounds by remember { mutableStateOf<Rect?>(null) }
+    var inputBounds by remember { mutableStateOf<Rect?>(null) }
+
+    fun updateAllBounds(root: LayoutCoordinates) {
+        if (!root.isAttached) return
+        drawerButtonCoords?.takeIf { it.isAttached }?.let { drawerButtonBounds = root.localBoundingBoxOf(it, false) }
+        headerCoords?.takeIf { it.isAttached }?.let { headerBounds = root.localBoundingBoxOf(it, false) }
+        promptsCoords?.takeIf { it.isAttached }?.let { promptsBounds = root.localBoundingBoxOf(it, false) }
+        inputCoords?.takeIf { it.isAttached }?.let { inputBounds = root.localBoundingBoxOf(it, false) }
+    }
+
+    val tutorialSteps = remember(drawerButtonBounds, headerBounds, promptsBounds, inputBounds) {
+        listOf(
+            TutorialStep(
+                id = "chat_drawer",
+                title = "Riwayat & Sesi Obrolan",
+                description = "Ketuk ikon menu di pojok kiri atas untuk membuka riwayat topik percakapan lampau, memulai obrolan baru, atau mengatur preferensi AI.",
+                category = "Sesi Chat",
+                icon = Icons.Default.History,
+                targetRect = drawerButtonBounds
+            ),
+            TutorialStep(
+                id = "chat_header",
+                title = "Asisten KasKu AI",
+                description = "Asisten finansial cerdas Anda terhubung langsung dengan basis data mutasi kas, saldo dompet, serta kurs valuta asing terkini.",
+                category = "KasKu AI",
+                icon = Icons.Default.AutoAwesome,
+                targetRect = headerBounds
+            ),
+            TutorialStep(
+                id = "chat_prompts",
+                title = "Rekomendasi Pertanyaan Cepat",
+                description = "Gunakan tombol pertanyaan instan untuk mengevaluasi kas, menganalisis pos boros, atau meminta rekomendasi hemat tanpa mengetik panjang.",
+                category = "Inspirasi",
+                icon = Icons.Default.QuestionAnswer,
+                targetRect = promptsBounds
+            ),
+            TutorialStep(
+                id = "chat_input",
+                title = "Konsultasi Finansial Bebas",
+                description = "Ketik pertanyaan apa pun seputar kondisi uang Anda di sini, termasuk dalam mata uang rupiah maupun valuta asing seperti USD.",
+                category = "Pesan",
+                icon = Icons.Default.Send,
+                targetRect = inputBounds
+            )
+        )
+    }
+
     // Auto-scroll ke pesan terbaru
     LaunchedEffect(chatMessages.size, isAnsweringQuestion) {
         val target = chatMessages.size + if (isAnsweringQuestion) 1 else 0
@@ -168,8 +238,16 @@ fun AiChatScreen(
         }
     }
 
-    // ModalNavigationDrawer: Drawer Riwayat Obrolan di sebelah kiri (1:1 Gemini)
-    ModalNavigationDrawer(
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .onGloballyPositioned { root ->
+                rootCoordinates = root
+                updateAllBounds(root)
+            }
+    ) {
+        // ModalNavigationDrawer: Drawer Riwayat Obrolan di sebelah kiri (1:1 Gemini)
+        ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
         drawerContent = {
@@ -471,7 +549,16 @@ fun AiChatScreen(
                 // Tombol Hamburger Menu Tunggal di Kiri (Buka Drawer Riwayat Chat)
                 IconButton(
                     onClick = { coroutineScope.launch { drawerState.open() } },
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier
+                        .size(40.dp)
+                        .onGloballyPositioned { coords ->
+                            drawerButtonCoords = coords
+                            rootCoordinates?.let { root ->
+                                if (root.isAttached && coords.isAttached) {
+                                    drawerButtonBounds = root.localBoundingBoxOf(coords, false)
+                                }
+                            }
+                        }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
@@ -484,7 +571,15 @@ fun AiChatScreen(
                 // Brand KasKu AI di Tengah (Minimalis & Modern)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        headerCoords = coords
+                        rootCoordinates?.let { root ->
+                            if (root.isAttached && coords.isAttached) {
+                                headerBounds = root.localBoundingBoxOf(coords, false)
+                            }
+                        }
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.AutoAwesome,
@@ -589,7 +684,16 @@ fun AiChatScreen(
                         // Rekomendasi Pertanyaan Awal (Chips Gemini)
                         Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onGloballyPositioned { coords ->
+                                    promptsCoords = coords
+                                    rootCoordinates?.let { root ->
+                                        if (root.isAttached && coords.isAttached) {
+                                            promptsBounds = root.localBoundingBoxOf(coords, false)
+                                        }
+                                    }
+                                }
                         ) {
                             quickQuestions.take(3).forEach { question ->
                                 Surface(
@@ -698,7 +802,15 @@ fun AiChatScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp, vertical = 10.dp)
-                    .navigationBarsPadding(),
+                    .navigationBarsPadding()
+                    .onGloballyPositioned { coords ->
+                        inputCoords = coords
+                        rootCoordinates?.let { root ->
+                            if (root.isAttached && coords.isAttached) {
+                                inputBounds = root.localBoundingBoxOf(coords, false)
+                            }
+                        }
+                    },
                 shape = RoundedCornerShape(28.dp),
                 color = MonzoSurface,
                 border = BorderStroke(1.dp, MonzoBorder),
@@ -781,7 +893,30 @@ fun AiChatScreen(
                 }
             }
         }
+
+        // Overlay Tutorial Interaktif KasKu AI Chat
+        if (!isTutorialCompleted && userPreferences != null) {
+            FeatureTutorialOverlay(
+                steps = tutorialSteps,
+                currentStepIndex = currentTutorialStepIndex,
+                onNextStep = {
+                    if (currentTutorialStepIndex < tutorialSteps.size - 1) {
+                        currentTutorialStepIndex++
+                    } else {
+                        coroutineScope.launch {
+                            userPreferences.setTutorialAiChatCompleted(true)
+                        }
+                    }
+                },
+                onSkipTutorial = {
+                    coroutineScope.launch {
+                        userPreferences.setTutorialAiChatCompleted(true)
+                    }
+                }
+            )
+        }
     }
+}
 }
 
 /**

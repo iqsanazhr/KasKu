@@ -84,6 +84,15 @@ import com.example.kasku.ui.theme.MonzoTealLight
 import com.example.kasku.ui.theme.MonzoTextPrimary
 import com.example.kasku.ui.theme.MonzoTextSecondary
 import com.example.kasku.ui.theme.MonzoTextTertiary
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import kotlinx.coroutines.launch
+import com.example.kasku.data.preferences.UserPreferences
+import com.example.kasku.ui.components.FeatureTutorialOverlay
+import com.example.kasku.ui.components.TutorialStep
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -106,6 +115,7 @@ fun TransactionsScreen(
     aiService: AiService,
     aiPreferences: AiPreferences,
     modifier: Modifier = Modifier,
+    userPreferences: UserPreferences? = null,
     onTransactionClick: ((Long) -> Unit)? = null,
     viewModel: TransactionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = TransactionsViewModel.Factory(repository, aiService, aiPreferences)
@@ -126,10 +136,75 @@ fun TransactionsScreen(
         filteredTransactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
     }
 
+    val isTutorialCompleted by (userPreferences?.isTutorialTransactionsCompletedFlow ?: remember { kotlinx.coroutines.flow.flowOf(true) })
+        .collectAsState(initial = true)
+    var currentTutorialStepIndex by remember { mutableIntStateOf(0) }
+    val coroutineScope = rememberCoroutineScope()
+
+    var rootCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var statsCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var searchFilterCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var listCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var fabCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+
+    var statsBounds by remember { mutableStateOf<Rect?>(null) }
+    var searchFilterBounds by remember { mutableStateOf<Rect?>(null) }
+    var listBounds by remember { mutableStateOf<Rect?>(null) }
+    var fabBounds by remember { mutableStateOf<Rect?>(null) }
+
+    fun updateAllBounds(root: LayoutCoordinates) {
+        if (!root.isAttached) return
+        statsCoords?.takeIf { it.isAttached }?.let { statsBounds = root.localBoundingBoxOf(it, false) }
+        searchFilterCoords?.takeIf { it.isAttached }?.let { searchFilterBounds = root.localBoundingBoxOf(it, false) }
+        listCoords?.takeIf { it.isAttached }?.let { listBounds = root.localBoundingBoxOf(it, false) }
+        fabCoords?.takeIf { it.isAttached }?.let { fabBounds = root.localBoundingBoxOf(it, false) }
+    }
+
+    val tutorialSteps = remember(statsBounds, searchFilterBounds, listBounds, fabBounds) {
+        listOf(
+            TutorialStep(
+                id = "tx_stats",
+                title = "Ringkasan Mutasi Kas",
+                description = "Pantau akumulasi total pemasukan dan pengeluaran secara real-time sesuai dengan pencarian atau filter yang sedang aktif.",
+                category = "Histori",
+                icon = Icons.AutoMirrored.Filled.TrendingUp,
+                targetRect = statsBounds
+            ),
+            TutorialStep(
+                id = "tx_search_filter",
+                title = "Pencarian & Filter Transaksi",
+                description = "Cari mutasi berdasarkan nama toko/keterangan, serta beralih cepat antara kategori Semua, Pengeluaran, dan Pemasukan.",
+                category = "Pencarian",
+                icon = Icons.Filled.Search,
+                targetRect = searchFilterBounds
+            ),
+            TutorialStep(
+                id = "tx_list",
+                title = "Daftar Riwayat Transaksi",
+                description = "Sentuh item transaksi untuk membuka detail lengkap, atau tekan ikon tong sampah untuk menghapus catatan transaksi.",
+                category = "Rincian",
+                icon = Icons.AutoMirrored.Filled.ReceiptLong,
+                targetRect = listBounds
+            ),
+            TutorialStep(
+                id = "tx_fab",
+                title = "Catat Transaksi Instan",
+                description = "Gunakan tombol plus melayang ini untuk menambah mutasi kas baru kapan saja secara cepat dan praktis.",
+                category = "Pencatatan",
+                icon = Icons.Filled.Add,
+                targetRect = fabBounds
+            )
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MonzoBackground)
+            .onGloballyPositioned { root ->
+                rootCoordinates = root
+                updateAllBounds(root)
+            }
     ) {
         LazyColumn(
             modifier = Modifier
@@ -197,7 +272,15 @@ fun TransactionsScreen(
                             shape = RoundedCornerShape(20.dp),
                             ambientColor = Color(0x08000000),
                             spotColor = Color(0x10000000)
-                        ),
+                        )
+                        .onGloballyPositioned { coords ->
+                            statsCoords = coords
+                            rootCoordinates?.let { root ->
+                                if (root.isAttached && coords.isAttached) {
+                                    statsBounds = root.localBoundingBoxOf(coords, false)
+                                }
+                            }
+                        },
                     shape = RoundedCornerShape(20.dp),
                     color = MonzoSurface,
                     border = BorderStroke(1.dp, MonzoBorder)
@@ -293,81 +376,90 @@ fun TransactionsScreen(
             }
 
             // ==========================================
-            // 3. SEARCH BAR
+            // 3. SEARCH & FILTER PILLS
             // ==========================================
             item {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { viewModel.setSearchQuery(it) },
-                    placeholder = {
-                        Text(
-                            text = "Cari transaksi, toko, atau akun...",
-                            style = MaterialTheme.typography.bodyMedium.copy(color = MonzoTextTertiary, fontSize = 13.5.sp)
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = null,
-                            tint = MonzoTeal,
-                            modifier = Modifier.size(19.dp)
-                        )
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotBlank()) {
-                            IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = "Bersihkan",
-                                    tint = MonzoTextSecondary,
-                                    modifier = Modifier.size(17.dp)
-                                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coords ->
+                            searchFilterCoords = coords
+                            rootCoordinates?.let { root ->
+                                if (root.isAttached && coords.isAttached) {
+                                    searchFilterBounds = root.localBoundingBoxOf(coords, false)
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MonzoSurface,
-                        unfocusedContainerColor = MonzoSurface,
-                        focusedBorderColor = MonzoTeal,
-                        unfocusedBorderColor = MonzoBorder,
-                        focusedTextColor = MonzoTextPrimary,
-                        unfocusedTextColor = MonzoTextPrimary
-                    ),
-                    singleLine = true
-                )
-            }
-
-            // ==========================================
-            // 4. FILTER PILLS (MONZO THEME)
-            // ==========================================
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        },
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    TransactionFilter.values().forEach { filter ->
-                        val isSelected = selectedFilter == filter
-                        Surface(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(38.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable { viewModel.setFilter(filter) },
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (isSelected) MonzoTeal else MonzoSurface,
-                            border = BorderStroke(1.dp, if (isSelected) MonzoTeal else MonzoBorder)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = filter.label,
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                        color = if (isSelected) Color.White else MonzoTextSecondary,
-                                        fontSize = 12.5.sp
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { viewModel.setSearchQuery(it) },
+                        placeholder = {
+                            Text(
+                                text = "Cari transaksi, toko, atau akun...",
+                                style = MaterialTheme.typography.bodyMedium.copy(color = MonzoTextTertiary, fontSize = 13.5.sp)
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = null,
+                                tint = MonzoTeal,
+                                modifier = Modifier.size(19.dp)
+                            )
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotBlank()) {
+                                IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = "Bersihkan",
+                                        tint = MonzoTextSecondary,
+                                        modifier = Modifier.size(17.dp)
                                     )
-                                )
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MonzoSurface,
+                            unfocusedContainerColor = MonzoSurface,
+                            focusedBorderColor = MonzoTeal,
+                            unfocusedBorderColor = MonzoBorder,
+                            focusedTextColor = MonzoTextPrimary,
+                            unfocusedTextColor = MonzoTextPrimary
+                        ),
+                        singleLine = true
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TransactionFilter.values().forEach { filter ->
+                            val isSelected = selectedFilter == filter
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(38.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable { viewModel.setFilter(filter) },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) MonzoTeal else MonzoSurface,
+                                border = BorderStroke(1.dp, if (isSelected) MonzoTeal else MonzoBorder)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = filter.label,
+                                        style = MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) Color.White else MonzoTextSecondary,
+                                            fontSize = 12.5.sp
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -387,7 +479,15 @@ fun TransactionsScreen(
                                 shape = RoundedCornerShape(20.dp),
                                 ambientColor = Color(0x08000000),
                                 spotColor = Color(0x10000000)
-                            ),
+                            )
+                            .onGloballyPositioned { coords ->
+                                listCoords = coords
+                                rootCoordinates?.let { root ->
+                                    if (root.isAttached && coords.isAttached) {
+                                        listBounds = root.localBoundingBoxOf(coords, false)
+                                    }
+                                }
+                            },
                         shape = RoundedCornerShape(20.dp),
                         color = MonzoSurface,
                         border = BorderStroke(1.dp, MonzoBorder)
@@ -437,10 +537,21 @@ fun TransactionsScreen(
                 }
             } else {
                 items(filteredTransactions, key = { it.id }) { tx ->
+                    val isFirstItem = filteredTransactions.firstOrNull()?.id == tx.id
                     MonzoTransactionCard(
                         transaction = tx,
                         onClick = { onTransactionClick?.invoke(tx.id) },
-                        onDeleteClick = { transactionToDelete = tx }
+                        onDeleteClick = { transactionToDelete = tx },
+                        modifier = if (isFirstItem) {
+                            Modifier.onGloballyPositioned { coords ->
+                                listCoords = coords
+                                rootCoordinates?.let { root ->
+                                    if (root.isAttached && coords.isAttached) {
+                                        listBounds = root.localBoundingBoxOf(coords, false)
+                                    }
+                                }
+                            }
+                        } else Modifier
                     )
                 }
             }
@@ -533,7 +644,15 @@ fun TransactionsScreen(
                     spotColor = Color(0x4DEB5B44)
                 )
                 .clip(CircleShape)
-                .clickable { showAddSheet = true },
+                .clickable { showAddSheet = true }
+                .onGloballyPositioned { coords ->
+                    fabCoords = coords
+                    rootCoordinates?.let { root ->
+                        if (root.isAttached && coords.isAttached) {
+                            fabBounds = root.localBoundingBoxOf(coords, false)
+                        }
+                    }
+                },
             color = MonzoCoral,
             shape = CircleShape
         ) {
@@ -545,6 +664,28 @@ fun TransactionsScreen(
                     modifier = Modifier.size(26.dp)
                 )
             }
+        }
+
+        // Overlay Tutorial Interaktif Riwayat
+        if (!isTutorialCompleted && userPreferences != null) {
+            FeatureTutorialOverlay(
+                steps = tutorialSteps,
+                currentStepIndex = currentTutorialStepIndex,
+                onNextStep = {
+                    if (currentTutorialStepIndex < tutorialSteps.size - 1) {
+                        currentTutorialStepIndex++
+                    } else {
+                        coroutineScope.launch {
+                            userPreferences.setTutorialTransactionsCompleted(true)
+                        }
+                    }
+                },
+                onSkipTutorial = {
+                    coroutineScope.launch {
+                        userPreferences.setTutorialTransactionsCompleted(true)
+                    }
+                }
+            )
         }
     }
 }

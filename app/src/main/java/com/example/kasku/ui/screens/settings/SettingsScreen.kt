@@ -86,6 +86,15 @@ import com.example.kasku.ui.theme.MonzoTextSecondary
 import com.example.kasku.ui.theme.MonzoTextTertiary
 import kotlinx.coroutines.launch
 
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.runtime.mutableIntStateOf
+import com.example.kasku.ui.components.FeatureTutorialOverlay
+import com.example.kasku.ui.components.TutorialStep
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.CurrencyExchange
+
 @Composable
 fun SettingsScreen(
     repository: KasKuRepository,
@@ -130,14 +139,81 @@ fun SettingsScreen(
 
     val userInitial = (userNameInput.ifBlank { savedUserName }).trim().firstOrNull()?.uppercaseChar()?.toString() ?: "K"
 
-    LazyColumn(
+    val isTutorialCompleted by userPreferences.isTutorialSettingsCompletedFlow.collectAsState(initial = true)
+    var currentTutorialStepIndex by remember { mutableIntStateOf(0) }
+
+    var rootCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var profileCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var currencyCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var walletsCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    var aiConfigCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+
+    var profileBounds by remember { mutableStateOf<Rect?>(null) }
+    var currencyBounds by remember { mutableStateOf<Rect?>(null) }
+    var walletsBounds by remember { mutableStateOf<Rect?>(null) }
+    var aiConfigBounds by remember { mutableStateOf<Rect?>(null) }
+
+    fun updateAllBounds(root: LayoutCoordinates) {
+        if (!root.isAttached) return
+        profileCoords?.takeIf { it.isAttached }?.let { profileBounds = root.localBoundingBoxOf(it, false) }
+        currencyCoords?.takeIf { it.isAttached }?.let { currencyBounds = root.localBoundingBoxOf(it, false) }
+        walletsCoords?.takeIf { it.isAttached }?.let { walletsBounds = root.localBoundingBoxOf(it, false) }
+        aiConfigCoords?.takeIf { it.isAttached }?.let { aiConfigBounds = root.localBoundingBoxOf(it, false) }
+    }
+
+    val tutorialSteps = remember(profileBounds, currencyBounds, walletsBounds, aiConfigBounds) {
+        listOf(
+            TutorialStep(
+                id = "settings_profile",
+                title = "Profil Pengguna",
+                description = "Ubah nama panggilan Anda agar KasKu AI dan salam beranda menyapa Anda secara personal.",
+                category = "Profil",
+                icon = Icons.Default.Person,
+                targetRect = profileBounds
+            ),
+            TutorialStep(
+                id = "settings_currency",
+                title = "Mata Uang & Kurs Global",
+                description = "Pilih mata uang utama (USD, EUR, SGD, JPY, GBP, IDR) dengan konversi dinamis otomatis ke seluruh tampilan aplikasi.",
+                category = "Mata Uang",
+                icon = Icons.Default.CurrencyExchange,
+                targetRect = currencyBounds
+            ),
+            TutorialStep(
+                id = "settings_wallets",
+                title = "Kelola Dompet & Saldo",
+                description = "Tambahkan rekening bank, e-wallet, atau pos uang tunai serta pantau saldo masing-masing secara terpisah.",
+                category = "Dompet",
+                icon = Icons.Default.AccountBalanceWallet,
+                targetRect = walletsBounds
+            ),
+            TutorialStep(
+                id = "settings_ai",
+                title = "Konfigurasi Mesin KasKu AI",
+                description = "Masukkan Google Gemini API Key Anda lalu sinkronkan pilihan model terbaru, atau gunakan Local LLM (LM Studio).",
+                category = "KasKu AI",
+                icon = Icons.Default.AutoAwesome,
+                targetRect = aiConfigBounds
+            )
+        )
+    }
+
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(MonzoBackground)
-            .padding(horizontal = 16.dp)
-            .imePadding(),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .onGloballyPositioned { root ->
+                rootCoordinates = root
+                updateAllBounds(root)
+            }
     ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .imePadding(),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
         // ==========================================
         // 1. TOP HEADER (CLEAN MONZO - NO BACK BUTTON)
         // ==========================================
@@ -175,7 +251,15 @@ fun SettingsScreen(
                         shape = RoundedCornerShape(20.dp),
                         ambientColor = Color(0x08000000),
                         spotColor = Color(0x10000000)
-                    ),
+                    )
+                    .onGloballyPositioned { coords ->
+                        profileCoords = coords
+                        rootCoordinates?.let { root ->
+                            if (root.isAttached && coords.isAttached) {
+                                profileBounds = root.localBoundingBoxOf(coords, false)
+                            }
+                        }
+                    },
                 shape = RoundedCornerShape(20.dp),
                 color = MonzoSurface,
                 border = BorderStroke(1.dp, MonzoBorder)
@@ -298,7 +382,15 @@ fun SettingsScreen(
                         shape = RoundedCornerShape(20.dp),
                         ambientColor = Color(0x08000000),
                         spotColor = Color(0x10000000)
-                    ),
+                    )
+                    .onGloballyPositioned { coords ->
+                        currencyCoords = coords
+                        rootCoordinates?.let { root ->
+                            if (root.isAttached && coords.isAttached) {
+                                currencyBounds = root.localBoundingBoxOf(coords, false)
+                            }
+                        }
+                    },
                 shape = RoundedCornerShape(20.dp),
                 color = MonzoSurface,
                 border = BorderStroke(1.dp, MonzoBorder)
@@ -478,7 +570,15 @@ fun SettingsScreen(
                         shape = RoundedCornerShape(20.dp),
                         ambientColor = Color(0x08000000),
                         spotColor = Color(0x10000000)
-                    ),
+                    )
+                    .onGloballyPositioned { coords ->
+                        walletsCoords = coords
+                        rootCoordinates?.let { root ->
+                            if (root.isAttached && coords.isAttached) {
+                                walletsBounds = root.localBoundingBoxOf(coords, false)
+                            }
+                        }
+                    },
                 shape = RoundedCornerShape(20.dp),
                 color = MonzoSurface,
                 border = BorderStroke(1.dp, MonzoBorder)
@@ -630,7 +730,15 @@ fun SettingsScreen(
                         shape = RoundedCornerShape(20.dp),
                         ambientColor = Color(0x08000000),
                         spotColor = Color(0x10000000)
-                    ),
+                    )
+                    .onGloballyPositioned { coords ->
+                        aiConfigCoords = coords
+                        rootCoordinates?.let { root ->
+                            if (root.isAttached && coords.isAttached) {
+                                aiConfigBounds = root.localBoundingBoxOf(coords, false)
+                            }
+                        }
+                    },
                 shape = RoundedCornerShape(20.dp),
                 color = MonzoSurface,
                 border = BorderStroke(1.dp, MonzoBorder)
@@ -716,105 +824,89 @@ fun SettingsScreen(
                     if (currentProvider == AiProvider.GEMINI) {
                         // Gemini API Key & Model Form
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            OutlinedTextField(
-                                value = geminiKeyInput,
-                                onValueChange = {
-                                    geminiKeyInput = it
-                                    scope.launch { aiPreferences.saveGeminiConfig(it, geminiModelInput) }
-                                },
-                                label = { Text("Gemini API Key", fontSize = 12.sp) },
-                                placeholder = { Text("AIzaSy...") },
-                                visualTransformation = if (isApiKeyVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                                trailingIcon = {
-                                    IconButton(onClick = { isApiKeyVisible = !isApiKeyVisible }) {
-                                        Icon(
-                                            imageVector = if (isApiKeyVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                            contentDescription = null,
-                                            tint = MonzoTextSecondary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = MonzoSurface,
-                                    unfocusedContainerColor = MonzoSurface,
-                                    focusedBorderColor = MonzoTeal,
-                                    unfocusedBorderColor = MonzoBorder
-                                ),
-                                singleLine = true
-                            )
-
                             var isFetchingModels by remember { mutableStateOf(false) }
                             var fetchedGeminiModels by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
                             var fetchModelStatusMessage by remember { mutableStateOf<String?>(null) }
                             var fetchModelError by remember { mutableStateOf<String?>(null) }
 
-                            // Tombol Cek Izin & Sinkronisasi Model Otomatis dari API Key
+                            // Input API Key dan Tombol Ikon Sinkron di Baris yang Sama
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                androidx.compose.material3.OutlinedButton(
-                                    onClick = {
-                                        if (geminiKeyInput.isNotBlank()) {
-                                            isFetchingModels = true
-                                            fetchModelStatusMessage = null
-                                            fetchModelError = null
-                                            scope.launch {
-                                                val res = aiService.fetchAvailableGeminiModels(geminiKeyInput)
-                                                res.onSuccess { models ->
-                                                    fetchedGeminiModels = models
-                                                    fetchModelStatusMessage = "Sukses: ${models.size} model aktif terverifikasi dari Google API."
-                                                }.onFailure { err ->
-                                                    fetchModelError = "Gagal memuat: ${err.localizedMessage}"
-                                                }
-                                                isFetchingModels = false
-                                            }
+                                OutlinedTextField(
+                                    value = geminiKeyInput,
+                                    onValueChange = {
+                                        geminiKeyInput = it
+                                        scope.launch { aiPreferences.saveGeminiConfig(it, geminiModelInput) }
+                                    },
+                                    label = { Text("Gemini API Key", fontSize = 12.sp) },
+                                    placeholder = { Text("AIzaSy...") },
+                                    visualTransformation = if (isApiKeyVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                    trailingIcon = {
+                                        IconButton(onClick = { isApiKeyVisible = !isApiKeyVisible }) {
+                                            Icon(
+                                                imageVector = if (isApiKeyVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                                contentDescription = null,
+                                                tint = MonzoTextSecondary,
+                                                modifier = Modifier.size(18.dp)
+                                            )
                                         }
                                     },
-                                    enabled = !isFetchingModels && geminiKeyInput.isNotBlank(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-                                        contentColor = MonzoTeal
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedContainerColor = MonzoSurface,
+                                        unfocusedContainerColor = MonzoSurface,
+                                        focusedBorderColor = MonzoTeal,
+                                        unfocusedBorderColor = MonzoBorder
                                     ),
-                                    border = BorderStroke(1.dp, if (geminiKeyInput.isNotBlank()) MonzoTeal.copy(alpha = 0.5f) else MonzoBorder)
-                                ) {
-                                    if (isFetchingModels) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(14.dp),
-                                            color = MonzoTeal,
-                                            strokeWidth = 2.dp
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Memeriksa API...", fontSize = 11.5.sp)
-                                    } else {
-                                        Icon(
-                                            imageVector = Icons.Default.Refresh,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(14.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Cek Izin & Sinkron Model", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold)
-                                    }
-                                }
+                                    singleLine = true
+                                )
 
-                                if (fetchedGeminiModels.isNotEmpty()) {
-                                    Surface(
-                                        shape = RoundedCornerShape(8.dp),
-                                        color = MonzoIncomeGreen.copy(alpha = 0.12f)
+                                // Tombol Ikon Sinkronisasi Model
+                                Surface(
+                                    modifier = Modifier.size(52.dp),
+                                    shape = RoundedCornerShape(14.dp),
+                                    color = if (geminiKeyInput.isNotBlank()) MonzoTealLight else MonzoElevated,
+                                    border = BorderStroke(1.dp, if (geminiKeyInput.isNotBlank()) MonzoTealBorder else MonzoBorder)
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            if (geminiKeyInput.isNotBlank()) {
+                                                isFetchingModels = true
+                                                fetchModelStatusMessage = null
+                                                fetchModelError = null
+                                                scope.launch {
+                                                    val res = aiService.fetchAvailableGeminiModels(geminiKeyInput)
+                                                    res.onSuccess { models ->
+                                                        fetchedGeminiModels = models
+                                                        fetchModelStatusMessage = "Sukses: ${models.size} model aktif terverifikasi dari Google API."
+                                                    }.onFailure { err ->
+                                                        fetchModelError = "Gagal: ${err.localizedMessage}"
+                                                    }
+                                                    isFetchingModels = false
+                                                }
+                                            }
+                                        },
+                                        enabled = !isFetchingModels && geminiKeyInput.isNotBlank(),
+                                        modifier = Modifier.fillMaxSize()
                                     ) {
-                                        Text(
-                                            text = "${fetchedGeminiModels.size} Model Terhubung",
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                            style = MaterialTheme.typography.labelSmall.copy(
-                                                color = MonzoIncomeGreen,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 11.sp
+                                        if (isFetchingModels) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(18.dp),
+                                                color = MonzoTeal,
+                                                strokeWidth = 2.dp
                                             )
-                                        )
+                                        } else {
+                                            Icon(
+                                                imageVector = Icons.Default.Refresh,
+                                                contentDescription = "Sinkron Model",
+                                                tint = if (geminiKeyInput.isNotBlank()) MonzoTeal else MonzoTextSecondary,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -1342,4 +1434,27 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(110.dp))
         }
     }
+
+    // Overlay Tutorial Interaktif Pengaturan
+    if (!isTutorialCompleted) {
+        FeatureTutorialOverlay(
+            steps = tutorialSteps,
+            currentStepIndex = currentTutorialStepIndex,
+            onNextStep = {
+                if (currentTutorialStepIndex < tutorialSteps.size - 1) {
+                    currentTutorialStepIndex++
+                } else {
+                    scope.launch {
+                        userPreferences.setTutorialSettingsCompleted(true)
+                    }
+                }
+            },
+            onSkipTutorial = {
+                scope.launch {
+                    userPreferences.setTutorialSettingsCompleted(true)
+                }
+            }
+        )
+    }
+}
 }

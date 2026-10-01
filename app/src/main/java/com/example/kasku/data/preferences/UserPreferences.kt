@@ -12,6 +12,10 @@ class UserPreferences(private val context: Context) {
         val KEY_USER_NAME = stringPreferencesKey("user_name")
         val KEY_ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val KEY_TUTORIAL_COMPLETED = booleanPreferencesKey("tutorial_completed")
+        val KEY_TUTORIAL_TRANSACTIONS = booleanPreferencesKey("tutorial_transactions_completed")
+        val KEY_TUTORIAL_INSIGHTS = booleanPreferencesKey("tutorial_insights_completed")
+        val KEY_TUTORIAL_SETTINGS = booleanPreferencesKey("tutorial_settings_completed")
+        val KEY_TUTORIAL_AI_CHAT = booleanPreferencesKey("tutorial_ai_chat_completed")
         val KEY_SELECTED_CURRENCY = stringPreferencesKey("selected_currency")
     }
 
@@ -29,6 +33,22 @@ class UserPreferences(private val context: Context) {
 
     val isTutorialCompletedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[KEY_TUTORIAL_COMPLETED] ?: false
+    }
+
+    val isTutorialTransactionsCompletedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[KEY_TUTORIAL_TRANSACTIONS] ?: false
+    }
+
+    val isTutorialInsightsCompletedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[KEY_TUTORIAL_INSIGHTS] ?: false
+    }
+
+    val isTutorialSettingsCompletedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[KEY_TUTORIAL_SETTINGS] ?: false
+    }
+
+    val isTutorialAiChatCompletedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[KEY_TUTORIAL_AI_CHAT] ?: false
     }
 
     suspend fun saveSelectedCurrency(currencyCode: String) {
@@ -61,9 +81,37 @@ class UserPreferences(private val context: Context) {
         }
     }
 
+    suspend fun setTutorialTransactionsCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_TUTORIAL_TRANSACTIONS] = completed
+        }
+    }
+
+    suspend fun setTutorialInsightsCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_TUTORIAL_INSIGHTS] = completed
+        }
+    }
+
+    suspend fun setTutorialSettingsCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_TUTORIAL_SETTINGS] = completed
+        }
+    }
+
+    suspend fun setTutorialAiChatCompleted(completed: Boolean = true) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_TUTORIAL_AI_CHAT] = completed
+        }
+    }
+
     suspend fun resetTutorial() {
         context.dataStore.edit { preferences ->
             preferences[KEY_TUTORIAL_COMPLETED] = false
+            preferences[KEY_TUTORIAL_TRANSACTIONS] = false
+            preferences[KEY_TUTORIAL_INSIGHTS] = false
+            preferences[KEY_TUTORIAL_SETTINGS] = false
+            preferences[KEY_TUTORIAL_AI_CHAT] = false
         }
     }
 }

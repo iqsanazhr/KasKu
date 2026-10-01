@@ -32,6 +32,7 @@ class CurrencyViewModel(
             _currencyState.value = UiState.Loading
             try {
                 val response = apiService.getExchangeRates(base)
+                com.example.kasku.ui.components.CurrencyConfig.updateRates(response.rates)
                 _currencyState.value = UiState.Success(response)
             } catch (e: Exception) {
                 _currencyState.value = UiState.Error(e.localizedMessage ?: "Gagal memuat kurs mata uang via Retrofit")

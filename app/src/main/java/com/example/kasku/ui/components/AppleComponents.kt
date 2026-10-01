@@ -55,6 +55,32 @@ import java.util.Locale
 object CurrencyConfig {
     var currentCurrency by mutableStateOf("IDR")
 
+    // Nilai tukar 1 USD terhadap berbagai mata uang (base USD)
+    // Nilai default ini berfungsi sebagai fallback saat aplikasi offline
+    var exchangeRatesFromUsd by mutableStateOf(
+        mapOf(
+            "USD" to 1.0,
+            "IDR" to 16250.0,
+            "EUR" to 0.92,
+            "SGD" to 1.34,
+            "MYR" to 4.45,
+            "JPY" to 152.0,
+            "GBP" to 0.78,
+            "AUD" to 1.52,
+            "SAR" to 3.75
+        )
+    )
+
+    fun updateRates(rates: Map<String, Double>) {
+        if (rates.isNotEmpty()) {
+            val updated = exchangeRatesFromUsd.toMutableMap()
+            rates.forEach { (k, v) ->
+                if (v > 0) updated[k.uppercase()] = v
+            }
+            exchangeRatesFromUsd = updated
+        }
+    }
+
     val supportedCurrencies = listOf(
         "IDR" to ("Rupiah Indonesia" to "Rp"),
         "USD" to ("US Dollar" to "$"),
@@ -81,11 +107,47 @@ object CurrencyConfig {
             else -> "$code "
         }
     }
+
+    /**
+     * Konversi nominal dari basis IDR ke mata uang target.
+     * Basis database KasKu adalah IDR.
+     */
+    fun convertFromIdr(amountInIdr: Double, targetCurrency: String = currentCurrency): Double {
+        if (targetCurrency.uppercase() == "IDR") return amountInIdr
+        val idrPerUsd = exchangeRatesFromUsd["IDR"] ?: 16250.0
+        if (idrPerUsd <= 0.0) return amountInIdr
+        val amountInUsd = amountInIdr / idrPerUsd
+        val targetRate = exchangeRatesFromUsd[targetCurrency.uppercase()] ?: 1.0
+        return amountInUsd * targetRate
+    }
+
+    /**
+     * Konversi dari mata uang input ke basis database IDR saat input transaksi baru.
+     */
+    fun convertToIdr(amountInCurrency: Double, sourceCurrency: String = currentCurrency): Double {
+        if (sourceCurrency.uppercase() == "IDR") return amountInCurrency
+        val idrPerUsd = exchangeRatesFromUsd["IDR"] ?: 16250.0
+        val sourceRate = exchangeRatesFromUsd[sourceCurrency.uppercase()] ?: 1.0
+        if (sourceRate <= 0.0) return amountInCurrency
+        val amountInUsd = amountInCurrency / sourceRate
+        return amountInUsd * idrPerUsd
+    }
 }
 
 // Multi-Currency & Rupiah Formatter
-fun formatRupiah(amount: Double, withPrefix: Boolean = true, currencyCode: String? = null): String {
+fun formatRupiah(
+    amount: Double,
+    withPrefix: Boolean = true,
+    currencyCode: String? = null,
+    alreadyConverted: Boolean = false
+): String {
     val code = currencyCode ?: CurrencyConfig.currentCurrency
+    val finalAmount = if (alreadyConverted || (currencyCode != null && currencyCode.uppercase() == "IDR")) {
+        amount
+    } else {
+        CurrencyConfig.convertFromIdr(amount, code)
+    }
+
     val locale = when (code.uppercase()) {
         "IDR" -> Locale("id", "ID")
         "USD" -> Locale.US
@@ -101,15 +163,17 @@ fun formatRupiah(amount: Double, withPrefix: Boolean = true, currencyCode: Strin
     val format = NumberFormat.getNumberInstance(locale)
     if (code.uppercase() == "IDR" || code.uppercase() == "JPY") {
         format.maximumFractionDigits = 0
+        format.minimumFractionDigits = 0
     } else {
         format.maximumFractionDigits = 2
+        format.minimumFractionDigits = 2
     }
-    val formattedNumber = format.format(amount)
+    val formattedNumber = format.format(finalAmount)
     return if (withPrefix) "${CurrencyConfig.getSymbol(code)}$formattedNumber" else formattedNumber
 }
 
-fun formatCurrency(amount: Double, withPrefix: Boolean = true, currencyCode: String? = null): String {
-    return formatRupiah(amount, withPrefix, currencyCode)
+fun formatCurrency(amount: Double, withPrefix: Boolean = true, currencyCode: String? = null, alreadyConverted: Boolean = false): String {
+    return formatRupiah(amount, withPrefix, currencyCode, alreadyConverted)
 }
 
 /**

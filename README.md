@@ -283,15 +283,41 @@ Untuk mengaktifkan fitur cerdas pemindai struk dan chatbot penasihat finansial:
 
 ---
 
+## 👥 Anggota Kelompok 2 (Kelas B - Pemrograman Mobile)
+
+Berikut adalah susunan anggota tim pengembang aplikasi KasKu yang diurutkan berdasarkan Nomor Induk Mahasiswa (NIM):
+
+| No | Foto / Avatar | Nama Mahasiswa | NIM | Peran & Kontribusi Utama |
+|:---:|:---:|:---|:---:|:---|
+| 1 | 👨‍💻 | **Iqsan Azhar Nuryadi** | `H1D024009` | **Lead Architect & UI/UX Specialist**: Perancangan konsep UI/UX Monzo & Apple HIG, arsitektur tema, reusable components (`AppleComponents.kt`), dan sistem multi-currency dinamis. |
+| 2 | 📊 | **Surung Nicholas Manalu** | `H1D024017` | **Core Feature & State Management**: Implementasi `DashboardScreen`, stack kartu virtual swipeable, formulir transaksi (`AddTransactionSheet`), dan alur state UDF. |
+| 3 | 🗄️ | **Izaz Falih** | `H1D024034` | **Database & Repository Architect**: Perancangan skema relasional Room SQLite (5 entitas 3NF), DAO reaktif, enkripsi preferensi DataStore, dan repository pattern. |
+| 4 | 🤖 | **Najmi Zahrian** | `H1D024038` | **AI Vision & Network Engineer**: Integrasi kamera CameraX, Gemini Multimodal Vision OCR struk belanja, Retrofit 2 REST API kurs live, dan discovery model dinamis. |
+
+---
+
 ## 🚀 Catatan Rilis (*Release Changelog*)
 
-### [v1.1.0] - 2026-10-02 (Multi-Currency & Dynamic AI Discovery)
-- 💱 **Sistem Multi-Currency Dinamis**: Pengguna kini dapat memilih 9 mata uang utama dunia (IDR, USD, EUR, SGD, MYR, JPY, GBP, AUD, SAR) dengan pembaruan simbol reaktif seketika di seluruh kartu saldo, grafik, mutasi, dan rincian transaksi.
-- 🌐 **Kurs Valuta Asing Real-Time & AI Grounding**: 
-  - Integrasi Retrofit 2 REST API (`open.er-api.com`) dengan arsitektur `UiState` interaktif.
-  - Asisten Keuangan AI kini dibekali pengetahuan kurs live (Grounding Context) untuk menjawab pertanyaan seputar konversi valas secara presisi.
+### [v1.1.0] - 2026-10-02 (Multi-Currency, Dynamic AI Discovery, & Interactive App Tour)
+- 💱 **Sistem Multi-Currency Dinamis & Konversi Real-Time**:
+  - Pilihan 9 mata uang utama dunia (IDR, USD, EUR, SGD, MYR, JPY, GBP, AUD, SAR) dengan pembaruan simbol dan nilai tukar live.
+  - Seluruh saldo di Beranda, Riwayat, Grafik Tren, dan formulir input mutasi otomatis berkonversi secara dinamis mengikuti mata uang yang dipilih di Pengaturan.
+  - Basis data SQLite tetap menyimpan nilai pokok dalam Rupiah (IDR) secara konsisten dan lossless tanpa merusak integritas skema.
+- 🌐 **Kurs Valuta Asing Real-Time & AI Grounding**:
+  - Integrasi Retrofit 2 REST API (`open.er-api.com`) dengan arsitektur `UiState` interaktif pada kartu kurs.
+  - Asisten Keuangan AI kini dibekali pengetahuan kurs live (Grounding Context) untuk menjawab pertanyaan seputar konversi valas secara akurat.
   - OCR Vision Scanner otomatis mendeteksi struk valas (USD, SGD, EUR, MYR) dan mengonversikan total ke estimasi Rupiah secara cerdas.
-- 🤖 **Dynamic Google Gemini Model Discovery**: Tombol *"Cek Izin & Sinkron Model"* untuk memeriksa API Key dan memuat seluruh model resmi aktif dari Google Generative Language API (hingga Gemini 3.8 Flash & 3.6 Flash, plus input kustom manual).
+- 🤖 **Dynamic Google Gemini Model Discovery & Inline Sync**:
+  - Tombol sinkronisasi model inline yang ringkas di samping kolom input API Key.
+  - Otomatis mengecek izin koneksi dan mengambil daftar model resmi yang didukung akun Google AI Studio pengguna (hingga `Gemini 3.8 Flash`, `Gemini 3.6 Flash`, `Gemini 2.5 Flash`, serta input manual kustom).
+- 🧭 **Panduan Interaktif Menyeluruh (*Interactive Guided Tour*)**:
+  - Perluasan fitur spotlight walkthrough tutorial (`FeatureTutorialOverlay`) ke 5 layar utama aplikasi:
+    1. **Beranda**: Tumpukan kartu saldo, aksi catat cepat, grafik arus kas 7 hari, dan akses asisten AI.
+    2. **Riwayat Transaksi**: Ringkasan akumulasi mutasi, filter & pencarian cerdas, rincian nota, dan FAB catat instan.
+    3. **Tren & Analitik**: Grafik arus kas mingguan/bulanan, distribusi pengeluaran per kategori, dan rincian surplus/defisit.
+    4. **Pengaturan**: Profil personal, selector mata uang & kurs valas, manajemen dompet, dan konfigurasi engine AI.
+    5. **KasKu AI Chat**: Sesi riwayat obrolan, asisten finansial dengan grounding kurs valas, quick prompts, dan pesan bebas.
+  - Otomatis muncul saat pengguna pertama kali memasuki ruang AI Chat, serta tombol *"Reset Panduan Interaktif"* di Pengaturan untuk memutar ulang panduan kapan saja.
 
 ### [v1.0.0] - 2026-10-01 (Gold Master Release)
 - 📱 Rilis publik perdana KasKu Smart Cash Flow & Expense Tracker.
