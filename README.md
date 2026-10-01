@@ -279,16 +279,6 @@ Untuk mengaktifkan fitur cerdas pemindai struk dan chatbot penasihat finansial:
 
 ---
 
-## 👥 Pengembang & Kontributor
-
-Aplikasi ini dikembangkan sebagai solusi manajemen finansial personal modern dengan standar kode bersih (*Clean Code*):
-
-| Nama Pengembang | Peran | Tautan Profil |
-|---|---|---|
-| **Iqsan Azhari** | Lead Android Developer & AI Integration | [@iqsanazhr](https://github.com/iqsanazhr) |
-
----
-
 ## 📄 Lisensi
 
 Proyek ini dilisensikan di bawah lisensi **[MIT License](LICENSE)**. Anda bebas menggunakan, memodifikasi, dan mendistribusikan kode ini untuk keperluan pembelajaran maupun pengembangan lebih lanjut.
