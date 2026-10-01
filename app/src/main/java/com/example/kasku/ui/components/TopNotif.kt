@@ -198,15 +198,15 @@ fun TopNotifHost(
 
                 val displayIcon = data.icon ?: defaultIcon
 
-                // Surface Kapsul Bubble Notifikasi Atas
+                // Surface Kapsul Bubble Notifikasi Atas (Warna Putih Bersih)
                 Surface(
                     modifier = Modifier
                         .widthIn(min = 220.dp, max = 390.dp)
                         .shadow(
-                            elevation = 16.dp,
+                            elevation = 14.dp,
                             shape = RoundedCornerShape(32.dp),
-                            spotColor = Color(0x70000000),
-                            ambientColor = Color(0x35000000)
+                            spotColor = Color(0x30000000),
+                            ambientColor = Color(0x18000000)
                         )
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -214,12 +214,12 @@ fun TopNotifHost(
                             onClick = { TopNotif.dismiss() }
                         ),
                     shape = RoundedCornerShape(32.dp),
-                    color = Color(0xFF0F172A), // Deep Night Slate OLED
-                    border = BorderStroke(1.dp, Color(0xFF334155).copy(alpha = 0.85f))
+                    color = Color.White,
+                    border = BorderStroke(1.dp, Color(0xFFE2E8F0))
                 ) {
                     Row(
                         modifier = Modifier
-                            .padding(horizontal = 12.dp, vertical = 9.dp),
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -230,7 +230,7 @@ fun TopNotifHost(
                             // Ikon Indikator Bulat
                             Box(
                                 modifier = Modifier
-                                    .size(30.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape)
                                     .background(badgeBgColor),
                                 contentAlignment = Alignment.Center
@@ -239,22 +239,22 @@ fun TopNotifHost(
                                     imageVector = displayIcon,
                                     contentDescription = null,
                                     tint = badgeIconTint,
-                                    modifier = Modifier.size(17.dp)
+                                    modifier = Modifier.size(18.dp)
                                 )
                             }
 
                             Spacer(modifier = Modifier.width(10.dp))
 
-                            // Konten Teks Notifikasi
+                            // Konten Teks Notifikasi (Hitam/Gelap untuk Kontras Tajam di Atas Putih)
                             Column(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
                                     text = data.title,
                                     style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = Color.White,
+                                        color = Color(0xFF0F172A), // Slate 900
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 13.sp,
+                                        fontSize = 13.5.sp,
                                         letterSpacing = (-0.2).sp
                                     ),
                                     maxLines = 1,
@@ -265,10 +265,10 @@ fun TopNotifHost(
                                     Text(
                                         text = data.message,
                                         style = MaterialTheme.typography.labelSmall.copy(
-                                            color = Color(0xFFCBD5E1),
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 11.5.sp,
-                                            lineHeight = 14.sp
+                                            color = Color(0xFF475569), // Slate 600
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 12.sp,
+                                            lineHeight = 15.sp
                                         ),
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis
@@ -277,22 +277,22 @@ fun TopNotifHost(
                             }
                         }
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
 
-                        // Tombol Tutup Kecil
+                        // Tombol Tutup Kecil Lembut
                         Box(
                             modifier = Modifier
-                                .size(20.dp)
+                                .size(22.dp)
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.12f))
+                                .background(Color(0xFFF1F5F9))
                                 .clickable { TopNotif.dismiss() },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = "Tutup",
-                                tint = Color.White.copy(alpha = 0.8f),
-                                modifier = Modifier.size(12.dp)
+                                tint = Color(0xFF64748B),
+                                modifier = Modifier.size(13.dp)
                             )
                         }
                     }
