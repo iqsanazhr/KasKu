@@ -152,10 +152,11 @@ fun AiChatScreen(
     val quickQuestions = remember {
         listOf(
             "Evaluasi pengeluaranku bulan ini",
+            "Catat pengeluaran makan siang 25rb",
+            "Buatkan dompet baru Bank Jago saldo 500rb",
             "Kategori apa yang paling boros?",
             "Berapa sisa uang amanku saat ini?",
-            "Tips hemat untuk pekan ini",
-            "Apakah pengeluaran makanku wajar?"
+            "Tips hemat untuk pekan ini"
         )
     }
 

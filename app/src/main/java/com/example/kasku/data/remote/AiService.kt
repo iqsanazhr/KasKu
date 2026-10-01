@@ -69,13 +69,67 @@ class AiService {
                 
                 $financialContext
 
-                Pertanyaan Pengguna:
+                Pertanyaan atau Permintaan Pengguna:
                 $question
 
                 Panduan Menjawab:
                 1. Jika pengguna menanyakan tentang saldo, dompet (wallet), rekening bank, e-wallet, atau uang tunai, sebutkan secara jelas rincian nama dompet, saldonya, serta total saldo keseluruhan berdasarkan data di atas.
                 2. Jika pengguna bertanya tentang pengeluaran, pemasukan, atau tips hemat/anggaran, berikan analisis yang relevan, praktis, dan akurat.
                 3. Jawab secara ramah, ringkas, dan jelas dalam 2-4 kalimat berbahasa Indonesia.
+                4. KEAHLIAN AKSI MANDIRI (AUTONOMOUS ACTION SKILLS):
+                   KasKu AI memiliki kemampuan mengeksekusi aksi database secara mandiri jika pengguna meminta tindakan langsung:
+                   a) Mencatat Pengeluaran Baru atau Pemasukan Baru (contoh: "Catat pengeluaran 50rb makan siang dari BCA", "Tambah pemasukan 5jt dari gaji", "Catat pengeluaran kopi 25rb").
+                   b) Mengurangi Pengeluaran atau Penyesuaian (contoh: "Kurangi pengeluaran makan siang 10rb", "Kurangi pengeluaran terakhir 5rb").
+                   c) Menghapus/Membatalkan Transaksi (contoh: "Hapus transaksi makan siang terakhir", "Batalkan transaksi kopi").
+                   d) Membuat Akun Dompet/Rekening Baru (contoh: "Buatkan dompet baru Bank Jago saldo 500rb", "Tambah dompet ShopeePay saldo 100rb", "Buat dompet Tunai saldo 200rb").
+
+                   JIKA DAN HANYA JIKA pengguna secara spesifik meminta salah satu aksi di atas:
+                   - Berikan jawaban konfirmasi yang ramah dan solutif pada teks responmu.
+                   - Di bagian PALING BAWAH responmu, sertakan blok kode JSON aksi di antara penanda persis <<<ACTION_JSON>>> dan <<<END_ACTION>>>.
+
+                   Format JSON Aksi:
+                   - Untuk Catat Transaksi:
+                     <<<ACTION_JSON>>>
+                     {
+                       "action": "CREATE_TRANSACTION",
+                       "type": "EXPENSE" atau "INCOME",
+                       "title": "Makan Siang",
+                       "amount": 50000.0,
+                       "currency": "IDR",
+                       "categoryName": "Makanan & Minuman",
+                       "accountName": "BCA"
+                     }
+                     <<<END_ACTION>>>
+
+                   - Untuk Kurangi Nominal Pengeluaran:
+                     <<<ACTION_JSON>>>
+                     {
+                       "action": "REDUCE_TRANSACTION",
+                       "searchTitle": "Makan Siang",
+                       "reduceAmount": 10000.0,
+                       "currency": "IDR"
+                     }
+                     <<<END_ACTION>>>
+
+                   - Untuk Hapus Transaksi:
+                     <<<ACTION_JSON>>>
+                     {
+                       "action": "DELETE_TRANSACTION",
+                       "searchTitle": "Makan Siang"
+                     }
+                     <<<END_ACTION>>>
+
+                   - Untuk Buat Dompet/Rekening Baru:
+                     <<<ACTION_JSON>>>
+                     {
+                       "action": "CREATE_ACCOUNT",
+                       "name": "Bank Jago",
+                       "type": "BANK",
+                       "initialBalance": 500000.0,
+                       "currency": "IDR"
+                     }
+                     <<<END_ACTION>>>
+                     (Nilai 'type' untuk dompet harus salah satu dari: "BANK", "E_WALLET", "CASH")
             """.trimIndent()
 
             val response = when (provider) {
@@ -91,6 +145,8 @@ class AiService {
     suspend fun scanReceipt(
         imageBytes: ByteArray,
         mimeType: String = "image/jpeg",
+        activeCurrency: String = "IDR",
+        exchangeRatesContext: String = "",
         provider: AiProvider,
         geminiApiKey: String,
         geminiModel: String,
@@ -102,6 +158,22 @@ class AiService {
             val prompt = """
                 Kamu adalah asisten keuangan KasKu untuk memindai struk belanja (receipt scanner).
                 Analisis gambar struk belanja berikut dengan teliti.
+
+                PENGATURAN MATA UANG APLIKASI:
+                - Mata uang aktif aplikasi: $activeCurrency
+                ${if (exchangeRatesContext.isNotBlank()) "- Tabel Kurs Acuan Valas: $exchangeRatesContext" else ""}
+
+                PEDOMAN MATA UANG STRUK & KONVERSI:
+                1. Kenali mata uang asal dari struk yang difoto (misal: Rupiah Rp, USD $, SGD S$, EUR €, MYR RM, JPY ¥, GBP £).
+                2. Field "totalAmount" pada output JSON HARUS dinyatakan dalam mata uang aktif aplikasi ($activeCurrency).
+                   - Jika mata uang struk BERBEDA dengan mata uang aktif ($activeCurrency), konversikan total belanja ke mata uang aktif ($activeCurrency) menggunakan kurs di atas.
+                     Contoh: Struk belanja di Indonesia senilai Rp 55.000, sedangkan mata uang aktif pengguna adalah USD (kurs 1 USD = 16.250 IDR):
+                     55.000 / 16.250 ≈ 3.38 USD. Maka kembalikan "totalAmount": 3.38.
+                     Contoh 2: Struk luar negeri senilai $15 USD, sedangkan mata uang aktif pengguna adalah IDR (kurs 1 USD = 16.250 IDR):
+                     15 * 16.250 = 243750.0. Maka kembalikan "totalAmount": 243750.0.
+                   - Jika mata uang struk sudah SAMA dengan mata uang aktif ($activeCurrency), gunakan nominal struk secara langsung.
+                3. Catat rincian mata uang asli struk dan hasil konversi pada field "notes" (contoh: "Struk asli Rp 55.000 dikonversi ke 3.38 USD (kurs 1 USD = Rp 16.250)").
+
                 Kembalikan HANYA JSON murni (tanpa penjelasan tambahan, tanpa markdown formatting) dengan format persis seperti ini:
                 {
                   "storeName": "Nama Toko atau Merchant",
@@ -115,12 +187,6 @@ class AiService {
                 }
                 Kategori yang disarankan harus salah satu dari:
                 ["Makanan & Minuman", "Belanja & Supermarket", "Transportasi", "Tagihan & Utilitas", "Hiburan & Rekreasi", "Kesehatan", "Pendidikan & Buku"]
-
-                Pedoman Mata Uang Asing & Kurs Valas:
-                Jika struk bertransaksi dalam valuta asing (seperti USD $, SGD S$, EUR €, MYR RM, JPY ¥, GBP £):
-                1. Kenali simbol mata uang aslinya.
-                2. Konversikan totalAmount ke estimasi Rupiah (IDR) berdasarkan kurs referensi wajar (misal: 1 USD ≈ Rp 16.200, 1 SGD ≈ Rp 12.200, 1 EUR ≈ Rp 17.500, 1 MYR ≈ Rp 3.650, 1 JPY ≈ Rp 105, 1 GBP ≈ Rp 20.800).
-                3. Cantumkan rincian nilai asli mata uang tersebut pada field "notes" (contoh: "Dikonversi dari ${'$'}14.50 USD dengan estimasi kurs 1 USD = Rp 16.200").
             """.trimIndent()
 
             val rawResponse = when (provider) {
@@ -138,6 +204,8 @@ class AiService {
 
     suspend fun parseNaturalLanguageEntry(
         text: String,
+        activeCurrency: String = "IDR",
+        exchangeRatesContext: String = "",
         provider: AiProvider,
         geminiApiKey: String,
         geminiModel: String,
@@ -147,6 +215,25 @@ class AiService {
         try {
             val prompt = """
                 Ekstrak transaksi keuangan dari kalimat berikut: "$text"
+
+                PENGATURAN MATA UANG APLIKASI:
+                - Mata uang aktif aplikasi: $activeCurrency
+                ${if (exchangeRatesContext.isNotBlank()) "- Tabel Kurs Acuan Valas: $exchangeRatesContext" else ""}
+
+                ATURAN KONVERSI MATA UANG & NOMINAL:
+                1. Periksa apakah dalam kalimat pengguna disebutkan mata uang tertentu (misalnya "5 juta rupiah", "Rp 50.000", "50rb", "100 usd", "$20", "50 euro", dll.).
+                2. Jika mata uang dalam kalimat pengguna BERBEDA dengan mata uang aktif ($activeCurrency):
+                   - Kamu WAJIB mengonversikan nilai nominal tersebut ke dalam mata uang aktif ($activeCurrency) menggunakan kurs di atas.
+                   - Contoh: Jika kalimat pengguna adalah "ada pemasukan 5 juta rupiah dari gaji" dan mata uang aktif adalah USD (kurs 1 USD = 16.250 IDR):
+                     5.000.000 / 16.250 ≈ 307.69 USD. Maka kembalikan "totalAmount": 307.69.
+                   - Contoh 2: Jika kalimat pengguna "beli kopi 25rb" dan mata uang aktif adalah USD:
+                     25.000 / 16.250 ≈ 1.54 USD. Maka kembalikan "totalAmount": 1.54.
+                   - Contoh 3: Jika kalimat pengguna "beli game 10 dollar" dan mata uang aktif adalah IDR:
+                     10 * 16.250 = 162500.0. Maka kembalikan "totalAmount": 162500.0.
+                3. Jika mata uang dalam kalimat sudah sama dengan mata uang aktif ($activeCurrency): gunakan nominal tersebut langsung tanpa konversi.
+                4. Jika pengguna di Indonesia menyebut singkatan seperti "50rb" atau "5jt" tanpa nama mata uang, anggap itu adalah Rupiah (IDR). Jika mata uang aktif adalah USD/EUR, konversikan ke mata uang aktif ($activeCurrency)!
+                5. Jika terjadi konversi mata uang, cantumkan rincian di field "notes" (contoh: "Dikonversi dari Rp 5.000.000 ke 307.69 USD (kurs 1 USD = Rp 16.250)").
+
                 Kembalikan HANYA JSON murni tanpa markdown dengan format:
                 {
                   "storeName": "Keterangan/Tempat/Nama Transaksi",

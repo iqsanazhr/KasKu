@@ -230,8 +230,13 @@ fun AddTransactionSheet(
                                     val lmUrl = aiPreferences.lmStudioUrlFlow.first()
                                     val lmModel = aiPreferences.lmStudioModelFlow.first()
 
+                                    val activeCurr = CurrencyConfig.currentCurrency
+                                    val ratesSummary = CurrencyConfig.getRatesTableSummary()
+
                                     val res = aiService.parseNaturalLanguageEntry(
                                         text = naturalLanguageInput,
+                                        activeCurrency = activeCurr,
+                                        exchangeRatesContext = ratesSummary,
                                         provider = provider,
                                         geminiApiKey = key,
                                         geminiModel = gModel,
@@ -241,7 +246,20 @@ fun AddTransactionSheet(
 
                                     res.onSuccess { parsed ->
                                         inputTitle = parsed.storeName
-                                        inputAmount = parsed.totalAmount.toLong().toString()
+                                        val isDecimalsAllowed = activeCurr != "IDR" && activeCurr != "JPY"
+                                        inputAmount = if (isDecimalsAllowed) {
+                                            if (parsed.totalAmount % 1.0 == 0.0) {
+                                                parsed.totalAmount.toLong().toString()
+                                            } else {
+                                                String.format(java.util.Locale.US, "%.2f", parsed.totalAmount)
+                                            }
+                                        } else {
+                                            parsed.totalAmount.toLong().toString()
+                                        }
+
+                                        if (parsed.notes.isNotBlank() && parsed.notes.contains("Dikonversi", ignoreCase = true)) {
+                                            TopNotif.showInfo("Kurs Valas", parsed.notes)
+                                        }
 
                                         // Cocokkan kategori hasil AI
                                         val matchedCat = categories.firstOrNull {

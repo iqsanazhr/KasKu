@@ -63,9 +63,14 @@ class ReceiptScannerViewModel(
                 val lmUrl = aiPreferences.lmStudioUrlFlow.first()
                 val lmModel = aiPreferences.lmStudioModelFlow.first()
 
+                val activeCurr = com.example.kasku.ui.components.CurrencyConfig.currentCurrency
+                val ratesSummary = com.example.kasku.ui.components.CurrencyConfig.getRatesTableSummary()
+
                 val result = aiService.scanReceipt(
                     imageBytes = imageBytes,
                     mimeType = "image/jpeg",
+                    activeCurrency = activeCurr,
+                    exchangeRatesContext = ratesSummary,
                     provider = provider,
                     geminiApiKey = geminiKey,
                     geminiModel = geminiModel,
@@ -104,10 +109,11 @@ class ReceiptScannerViewModel(
             val acc = accounts.value.firstOrNull { it.id == accountId } ?: accounts.value.firstOrNull()
 
             if (cat != null && acc != null) {
+                val amountInIdr = com.example.kasku.ui.components.CurrencyConfig.convertToIdr(amount)
                 repository.addTransaction(
                     Transaction(
                         title = storeName.ifBlank { "Belanja Struk" },
-                        amount = amount,
+                        amount = amountInIdr,
                         type = TransactionType.EXPENSE,
                         categoryId = cat.id,
                         categoryName = cat.name,
@@ -119,7 +125,9 @@ class ReceiptScannerViewModel(
                         rawReceiptItems = items
                     )
                 )
-                _saveSuccessMessage.value = "Transaksi berhasil disimpan ke ${acc.name}!"
+                val msg = "Transaksi struk berhasil dicatat ke ${acc.name}!"
+                _saveSuccessMessage.value = msg
+                com.example.kasku.ui.components.TopNotif.showSuccess("Struk Berhasil Disimpan", msg)
                 onSuccess()
             } else {
                 _errorMessage.value = "Pilih kategori dan akun dompet terlebih dahulu."

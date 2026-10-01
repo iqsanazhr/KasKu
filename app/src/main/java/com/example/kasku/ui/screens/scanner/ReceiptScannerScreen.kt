@@ -247,7 +247,21 @@ fun ReceiptScannerScreen(
     LaunchedEffect(scanResult) {
         scanResult?.let { extracted ->
             storeNameInput = extracted.storeName
-            totalAmountInput = if (extracted.totalAmount > 0) extracted.totalAmount.toLong().toString() else ""
+            val activeCode = com.example.kasku.ui.components.CurrencyConfig.currentCurrency
+            val isDecimals = activeCode != "IDR" && activeCode != "JPY"
+            totalAmountInput = if (extracted.totalAmount > 0) {
+                if (isDecimals) {
+                    if (extracted.totalAmount % 1.0 == 0.0) extracted.totalAmount.toLong().toString()
+                    else String.format(java.util.Locale.US, "%.2f", extracted.totalAmount)
+                } else {
+                    extracted.totalAmount.toLong().toString()
+                }
+            } else ""
+
+            if (extracted.notes.isNotBlank() && extracted.notes.contains("Dikonversi", ignoreCase = true)) {
+                com.example.kasku.ui.components.TopNotif.showInfo("Kurs Valas", extracted.notes)
+            }
+
             val matchedCat = categories.firstOrNull {
                 it.name.contains(extracted.suggestedCategory, ignoreCase = true)
             } ?: categories.firstOrNull()
@@ -793,12 +807,37 @@ fun ReceiptScannerScreen(
 
                         // Form Total Nominal
                         item {
+                            val activeCode = com.example.kasku.ui.components.CurrencyConfig.currentCurrency
+                            val activeSymbol = com.example.kasku.ui.components.CurrencyConfig.getSymbol().trim()
+                            val isDecimalsAllowed = activeCode != "IDR" && activeCode != "JPY"
+
                             OutlinedTextField(
                                 value = totalAmountInput,
-                                onValueChange = { totalAmountInput = it },
-                                label = { Text("Total Pengeluaran (Rp)") },
+                                onValueChange = { str ->
+                                    if (isDecimalsAllowed) {
+                                        if (str.count { it == '.' } <= 1 && str.all { it.isDigit() || it == '.' }) {
+                                            totalAmountInput = str
+                                        }
+                                    } else {
+                                        if (str.all { it.isDigit() }) totalAmountInput = str
+                                    }
+                                },
+                                label = { Text("Total Pengeluaran ($activeCode)") },
+                                leadingIcon = {
+                                    Text(
+                                        text = activeSymbol,
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = MonzoCoral
+                                        ),
+                                        modifier = Modifier.padding(start = 14.dp, end = 4.dp)
+                                    )
+                                },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                    keyboardType = if (isDecimalsAllowed) androidx.compose.ui.text.input.KeyboardType.Decimal else androidx.compose.ui.text.input.KeyboardType.Number
+                                ),
                                 shape = RoundedCornerShape(14.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MonzoTeal,
@@ -807,6 +846,20 @@ fun ReceiptScannerScreen(
                                     unfocusedContainerColor = Color(0xFFFAFCFA)
                                 )
                             )
+
+                            if (activeCode != "IDR" && totalAmountInput.isNotBlank()) {
+                                val rawVal = totalAmountInput.toDoubleOrNull() ?: 0.0
+                                val inIdr = com.example.kasku.ui.components.CurrencyConfig.convertToIdr(rawVal)
+                                Text(
+                                    text = "≈ Rp ${formatRupiah(inIdr, withPrefix = false, currencyCode = "IDR", alreadyConverted = true)} (disimpan ke basis data IDR)",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = MonzoTeal,
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.Medium
+                                    ),
+                                    modifier = Modifier.padding(start = 6.dp, top = 2.dp)
+                                )
+                            }
                         }
 
                         // Pilihan Akun / Dompet Pembayar

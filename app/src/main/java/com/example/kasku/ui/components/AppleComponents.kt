@@ -108,6 +108,16 @@ object CurrencyConfig {
         }
     }
 
+    fun getRatesTableSummary(): String {
+        val idr = exchangeRatesFromUsd["IDR"] ?: 16250.0
+        val eur = exchangeRatesFromUsd["EUR"] ?: 0.92
+        val sgd = exchangeRatesFromUsd["SGD"] ?: 1.34
+        val myr = exchangeRatesFromUsd["MYR"] ?: 4.45
+        val jpy = exchangeRatesFromUsd["JPY"] ?: 152.0
+        val gbp = exchangeRatesFromUsd["GBP"] ?: 0.78
+        return "1 USD = Rp $idr IDR | 1 USD = €$eur EUR | 1 USD = S$$sgd SGD | 1 USD = RM$myr MYR | 1 USD = ¥$jpy JPY | 1 USD = £$gbp GBP"
+    }
+
     /**
      * Konversi nominal dari basis IDR ke mata uang target.
      * Basis database KasKu adalah IDR.

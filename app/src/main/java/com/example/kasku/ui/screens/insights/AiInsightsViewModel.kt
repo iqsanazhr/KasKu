@@ -12,6 +12,8 @@ import com.example.kasku.data.repository.KasKuRepository
 import com.example.kasku.domain.model.Account
 import com.example.kasku.domain.model.Transaction
 import com.example.kasku.domain.model.TransactionType
+import com.example.kasku.ui.components.CurrencyConfig
+import com.example.kasku.ui.components.TopNotif
 import com.example.kasku.ui.components.formatRupiah
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +23,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -356,14 +362,20 @@ class AiInsightsViewModel(
                     "1 USD ≈ Rp 16.200 | 1 SGD ≈ Rp 12.200 | 1 EUR ≈ Rp 17.500 | 1 MYR ≈ Rp 3.650"
                 }
 
+                val activeCurr = CurrencyConfig.currentCurrency
+                val allCategories = repository.getAllCategories().first()
+                val categoriesSummary = allCategories.joinToString(", ") { "${it.name} (${it.type})" }
+
                 val financialContext = buildString {
                     appendLine("DATA KEUANGAN & DOMPET PENGGUNA TERKINI (KASKU):")
+                    appendLine("- Mata Uang Aktif Aplikasi: $activeCurr (${CurrencyConfig.getSymbol().trim()})")
                     appendLine("- Total Saldo Seluruh Dompet: ${formatRupiah(totalWalletBalance)}")
                     appendLine("- Daftar Dompet/Akun & Saldo: $walletDetails")
                     appendLine("- Total Pemasukan: ${formatRupiah(totalInc)}")
                     appendLine("- Total Pengeluaran: ${formatRupiah(totalExp)}")
                     appendLine("- Arus Kas Bersih (Pemasukan - Pengeluaran): ${formatRupiah(totalInc - totalExp)}")
                     appendLine("- Jumlah Transaksi Tercatat: ${txList.size}")
+                    appendLine("- Daftar Kategori Tersedia: $categoriesSummary")
                     if (topCategories.isNotBlank()) {
                         appendLine("- Kategori Pengeluaran Terbanyak: $topCategories")
                     }
@@ -373,8 +385,8 @@ class AiInsightsViewModel(
                     } else {
                         appendLine("- Rincian Riwayat Transaksi Pengguna: Belum ada transaksi yang disimpan.")
                     }
-                    appendLine("- Kurs Valuta Asing Terkini (Live REST API open.er-api.com): $currencyExchangeContext")
-                    appendLine("  (Gunakan data kurs ini jika pengguna bertanya tentang konversi nilai uang kas ke USD/valas lain, belanja barang impor, atau kebutuhan konversi mata uang).")
+                    appendLine("- Kurs Valuta Asing Terkini: $currencyExchangeContext | Acuan: ${CurrencyConfig.getRatesTableSummary()}")
+                    appendLine("  (Gunakan data kurs ini jika pengguna menyebut mata uang yang berbeda dari mata uang aktif $activeCurr atau meminta konversi).")
                 }
 
                 val res = aiService.askFinancialAssistant(
@@ -387,11 +399,27 @@ class AiInsightsViewModel(
                     lmStudioModel = lmModel
                 )
 
-                val answerText = res.getOrElse { err ->
+                val rawAnswer = res.getOrElse { err ->
                     "Maaf, gagal memproses pertanyaan (${err.localizedMessage ?: "Koneksi bermasalah"}). Pastikan API Key Gemini atau LM Studio sudah diatur di menu Pengaturan."
                 }
-                _chatMessages.value = _chatMessages.value + ChatMessage(sender = ChatSender.AI, text = answerText)
+
+                // Ekstrak blok JSON aksi mandiri AI jika ada
+                val actionRegex = Regex("""<<<ACTION_JSON>>>\s*([\s\S]*?)\s*<<<END_ACTION>>>""")
+                val actionMatch = actionRegex.find(rawAnswer)
+                val cleanAnswerText = if (actionMatch != null) {
+                    rawAnswer.replace(actionRegex, "").trim()
+                } else {
+                    rawAnswer.trim()
+                }
+
+                _chatMessages.value = _chatMessages.value + ChatMessage(sender = ChatSender.AI, text = cleanAnswerText)
                 persistCurrentSession(sessionTitle)
+
+                // Jalankan aksi database secara mandiri di latar belakang jika AI memberikan payload instruksi aksi
+                if (actionMatch != null) {
+                    val jsonContent = actionMatch.groupValues[1]
+                    executeAutonomousAction(jsonContent)
+                }
             } catch (e: Exception) {
                 _chatMessages.value = _chatMessages.value + ChatMessage(
                     sender = ChatSender.AI,
@@ -401,6 +429,175 @@ class AiInsightsViewModel(
             } finally {
                 _isAnsweringQuestion.value = false
             }
+        }
+    }
+
+    private suspend fun executeAutonomousAction(jsonContent: String) {
+        try {
+            val jsonParser = Json { ignoreUnknownKeys = true; isLenient = true }
+            val jsonObj = jsonParser.parseToJsonElement(jsonContent).jsonObject
+            val action = jsonObj["action"]?.jsonPrimitive?.content ?: return
+
+            when (action) {
+                "CREATE_TRANSACTION" -> {
+                    val typeStr = jsonObj["type"]?.jsonPrimitive?.content ?: "EXPENSE"
+                    val txType = if (typeStr.equals("INCOME", true)) TransactionType.INCOME else TransactionType.EXPENSE
+                    val title = jsonObj["title"]?.jsonPrimitive?.content?.ifBlank { "Transaksi AI" } ?: "Transaksi AI"
+                    val rawAmount = jsonObj["amount"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                    val currency = jsonObj["currency"]?.jsonPrimitive?.content ?: CurrencyConfig.currentCurrency
+                    val amountInIdr = if (currency.equals("IDR", true)) {
+                        rawAmount
+                    } else {
+                        CurrencyConfig.convertToIdr(rawAmount, currency)
+                    }
+
+                    if (amountInIdr > 0.0) {
+                        val catName = jsonObj["categoryName"]?.jsonPrimitive?.content ?: ""
+                        val accName = jsonObj["accountName"]?.jsonPrimitive?.content ?: ""
+
+                        val allCats = repository.getAllCategories().first()
+                        val matchedCat = allCats.firstOrNull {
+                            it.type == txType && (it.name.contains(catName, true) || catName.contains(it.name, true))
+                        } ?: allCats.firstOrNull { it.type == txType } ?: allCats.firstOrNull()
+
+                        val allAccs = repository.getAllAccounts().first()
+                        val matchedAcc = allAccs.firstOrNull {
+                            it.name.contains(accName, true) || accName.contains(it.name, true)
+                        } ?: allAccs.firstOrNull()
+
+                        if (matchedCat != null && matchedAcc != null) {
+                            repository.addTransaction(
+                                Transaction(
+                                    title = title,
+                                    amount = amountInIdr,
+                                    type = txType,
+                                    categoryId = matchedCat.id,
+                                    categoryName = matchedCat.name,
+                                    categoryIcon = matchedCat.iconName,
+                                    categoryColor = matchedCat.colorHex,
+                                    accountId = matchedAcc.id,
+                                    accountName = matchedAcc.name,
+                                    date = System.currentTimeMillis()
+                                )
+                            )
+                            val typeLabel = if (txType == TransactionType.INCOME) "Pemasukan" else "Pengeluaran"
+                            TopNotif.showSuccess(
+                                title = "Transaksi Dicatat!",
+                                message = "$typeLabel '$title' senilai ${formatRupiah(amountInIdr)} berhasil disimpan ke dompet ${matchedAcc.name}."
+                            )
+                        }
+                    }
+                }
+
+                "REDUCE_TRANSACTION" -> {
+                    val searchTitle = jsonObj["searchTitle"]?.jsonPrimitive?.content ?: "last"
+                    val reduceAmount = jsonObj["reduceAmount"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                    val currency = jsonObj["currency"]?.jsonPrimitive?.content ?: CurrencyConfig.currentCurrency
+                    val reduceInIdr = if (currency.equals("IDR", true)) {
+                        reduceAmount
+                    } else {
+                        CurrencyConfig.convertToIdr(reduceAmount, currency)
+                    }
+
+                    val allTx = repository.getAllTransactions().first()
+                    val targetTx = if (searchTitle.equals("last", true)) {
+                        allTx.firstOrNull { it.type == TransactionType.EXPENSE }
+                    } else {
+                        allTx.firstOrNull { it.type == TransactionType.EXPENSE && it.title.contains(searchTitle, true) }
+                            ?: allTx.firstOrNull { it.title.contains(searchTitle, true) }
+                    }
+
+                    if (targetTx != null && reduceInIdr > 0.0) {
+                        val newAmount = targetTx.amount - reduceInIdr
+                        if (newAmount <= 0.0) {
+                            repository.deleteTransaction(targetTx)
+                            TopNotif.showSuccess(
+                                title = "Pengeluaran Dihapus",
+                                message = "Transaksi '${targetTx.title}' dihapus karena nominal telah berkurang habis."
+                            )
+                        } else {
+                            repository.deleteTransaction(targetTx)
+                            repository.addTransaction(
+                                targetTx.copy(
+                                    id = 0,
+                                    amount = newAmount,
+                                    date = targetTx.date
+                                )
+                            )
+                            TopNotif.showSuccess(
+                                title = "Pengeluaran Dikurangi",
+                                message = "Pengeluaran '${targetTx.title}' dikurangi ${formatRupiah(reduceInIdr)}. Sisa nominal: ${formatRupiah(newAmount)}."
+                            )
+                        }
+                    } else if (targetTx == null) {
+                        TopNotif.showWarning(
+                            title = "Tidak Ditemukan",
+                            message = "Tidak menemukan transaksi yang cocok untuk dikurangi nominalnya."
+                        )
+                    }
+                }
+
+                "DELETE_TRANSACTION" -> {
+                    val searchTitle = jsonObj["searchTitle"]?.jsonPrimitive?.content ?: "last"
+                    val allTx = repository.getAllTransactions().first()
+                    val targetTx = if (searchTitle.equals("last", true)) {
+                        allTx.firstOrNull()
+                    } else {
+                        allTx.firstOrNull { it.title.contains(searchTitle, true) }
+                    }
+
+                    if (targetTx != null) {
+                        repository.deleteTransaction(targetTx)
+                        TopNotif.showSuccess(
+                            title = "Transaksi Dihapus",
+                            message = "Transaksi '${targetTx.title}' senilai ${formatRupiah(targetTx.amount)} berhasil dihapus dari dompet ${targetTx.accountName}."
+                        )
+                    } else {
+                        TopNotif.showWarning(
+                            title = "Tidak Ditemukan",
+                            message = "Tidak menemukan transaksi yang cocok untuk dihapus."
+                        )
+                    }
+                }
+
+                "CREATE_ACCOUNT" -> {
+                    val name = jsonObj["name"]?.jsonPrimitive?.content?.ifBlank { "Dompet Baru" } ?: "Dompet Baru"
+                    val typeStr = jsonObj["type"]?.jsonPrimitive?.content ?: "BANK"
+                    val accType = when (typeStr.uppercase()) {
+                        "E_WALLET", "EWALLET" -> "E_WALLET"
+                        "CASH", "TUNAI" -> "CASH"
+                        else -> "BANK"
+                    }
+                    val rawBal = jsonObj["initialBalance"]?.jsonPrimitive?.doubleOrNull ?: 0.0
+                    val currency = jsonObj["currency"]?.jsonPrimitive?.content ?: CurrencyConfig.currentCurrency
+                    val balInIdr = if (currency.equals("IDR", true)) {
+                        rawBal
+                    } else {
+                        CurrencyConfig.convertToIdr(rawBal, currency)
+                    }
+
+                    val iconName = when (accType) {
+                        "BANK" -> "account_balance"
+                        "E_WALLET" -> "account_balance_wallet"
+                        else -> "payments"
+                    }
+
+                    repository.addAccount(
+                        Account(
+                            name = name,
+                            type = accType,
+                            balance = balInIdr,
+                            iconName = iconName
+                        )
+                    )
+                    TopNotif.showSuccess(
+                        title = "Dompet Baru Dibuat!",
+                        message = "Dompet '$name' ($accType) dengan saldo awal ${formatRupiah(balInIdr)} berhasil ditambahkan."
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            TopNotif.showError("Gagal Eksekusi Aksi AI", e.localizedMessage)
         }
     }
 
