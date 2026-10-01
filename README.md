@@ -238,7 +238,7 @@ D:\kasku\
 | **Penyimpanan Lokal** | **Room Database (SQLite)** | Penyimpanan mutasi, histori transaksi, dompet, dan riwayat chat |
 | **Preferensi** | **Jetpack DataStore** | Penyimpanan kunci API dan pengaturan onboarding secara aman |
 | **Kamera & Gambar** | **CameraX + Coil 3** | Antarmuka kamera OCR struk dan perenderan gambar asinkron |
-| **Jaringan & HTTP** | **OkHttp 3 + Kotlinx Serialization** | Komunikasi HTTP client ke endpoint Gemini AI & LM Studio |
+| **Jaringan & REST API** | **Retrofit 2 + OkHttp 3 + Kotlinx Serialization** | Klien REST API kurs valas (Retrofit 2) & HTTP client AI Gemini/LM Studio (OkHttp 3) |
 | **Kecerdasan Buatan** | **Google Gemini & LM Studio** | Model multimodal AI vision struk dan chatbot analitik finansial |
 
 ---
