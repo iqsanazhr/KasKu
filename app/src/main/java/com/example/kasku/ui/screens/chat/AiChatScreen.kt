@@ -10,6 +10,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -763,33 +765,37 @@ fun AiChatScreen(
                 }
             }
 
-            // Chips Rekomendasi Horizontal (Jika Chat Sudah Berjalan & Keyboard Tertutup)
+            // Chips Rekomendasi Horizontal Sebaris (Jika Chat Sudah Berjalan & Keyboard Tertutup)
             if (!isWelcomeState) {
                 AnimatedVisibility(visible = !isKeyboardOpen) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
                             .padding(horizontal = 16.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        quickQuestions.take(2).forEach { question ->
+                        quickQuestions.forEach { question ->
                             Surface(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(RoundedCornerShape(100.dp))
                                     .clickable(enabled = !isAnsweringQuestion) {
                                         viewModel.sendMessage(question)
                                     },
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(100.dp),
                                 color = MonzoSurface,
                                 border = BorderStroke(1.dp, MonzoBorder)
                             ) {
                                 Text(
                                     text = question,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                                    maxLines = 1,
+                                    softWrap = false,
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         color = MonzoTeal,
                                         fontWeight = FontWeight.SemiBold,
-                                        fontSize = 11.5.sp
+                                        fontSize = 12.sp
                                     )
                                 )
                             }

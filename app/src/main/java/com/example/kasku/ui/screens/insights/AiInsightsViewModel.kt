@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
@@ -66,10 +67,10 @@ class AiInsightsViewModel(
     val chatHistoryManager = ChatHistoryManager(aiPreferences.context)
 
     val transactions: StateFlow<List<Transaction>> = repository.getAllTransactions()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val accounts: StateFlow<List<Account>> = repository.getAllAccounts()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val initialGreeting = ChatMessage(
         sender = ChatSender.AI,
@@ -302,7 +303,8 @@ class AiInsightsViewModel(
                 val lmUrl = aiPreferences.lmStudioUrlFlow.first()
                 val lmModel = aiPreferences.lmStudioModelFlow.first()
 
-                val accList = accounts.value
+                // Ambil data dompet dan riwayat transaksi langsung dari database Room secara sinkron & fresh
+                val accList = repository.getAllAccounts().first()
                 val totalWalletBalance = accList.sumOf { it.balance }
                 val walletDetails = if (accList.isNotEmpty()) {
                     accList.joinToString("; ") { acc ->
@@ -318,7 +320,7 @@ class AiInsightsViewModel(
                     "Belum ada akun dompet terdaftar"
                 }
 
-                val txList = transactions.value
+                val txList = repository.getAllTransactions().first()
                 val totalExp = txList.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
                 val totalInc = txList.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
 
@@ -331,9 +333,10 @@ class AiInsightsViewModel(
                     .joinToString(", ") { "${it.first}: ${formatRupiah(it.second)}" }
 
                 val recentTxSummary = if (txList.isNotEmpty()) {
-                    txList.take(5).joinToString("; ") { tx ->
-                        val typeSign = if (tx.type == TransactionType.EXPENSE) "-" else "+"
-                        "${tx.title} ($typeSign${formatRupiah(tx.amount)} via ${tx.accountName})"
+                    txList.take(15).joinToString("\n  * ") { tx ->
+                        val typeSign = if (tx.type == TransactionType.EXPENSE) "Pengeluaran (-)" else "Pemasukan (+)"
+                        val dateStr = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).format(Date(tx.date))
+                        "${tx.title}: $typeSign ${formatRupiah(tx.amount)} [Kategori: ${tx.categoryName}, Dompet: ${tx.accountName}, Tanggal: $dateStr]"
                     }
                 } else {
                     "Belum ada transaksi tercatat"
@@ -354,17 +357,22 @@ class AiInsightsViewModel(
                 }
 
                 val financialContext = buildString {
-                    appendLine("DATA KEUANGAN & DOMPET PENGGUNA TERKINI:")
+                    appendLine("DATA KEUANGAN & DOMPET PENGGUNA TERKINI (KASKU):")
                     appendLine("- Total Saldo Seluruh Dompet: ${formatRupiah(totalWalletBalance)}")
                     appendLine("- Daftar Dompet/Akun & Saldo: $walletDetails")
                     appendLine("- Total Pemasukan: ${formatRupiah(totalInc)}")
                     appendLine("- Total Pengeluaran: ${formatRupiah(totalExp)}")
                     appendLine("- Arus Kas Bersih (Pemasukan - Pengeluaran): ${formatRupiah(totalInc - totalExp)}")
-                    appendLine("- Jumlah Transaksi: ${txList.size}")
+                    appendLine("- Jumlah Transaksi Tercatat: ${txList.size}")
                     if (topCategories.isNotBlank()) {
                         appendLine("- Kategori Pengeluaran Terbanyak: $topCategories")
                     }
-                    appendLine("- Transaksi Terkini: $recentTxSummary")
+                    if (txList.isNotEmpty()) {
+                        appendLine("- Rincian Riwayat Transaksi Pengguna:")
+                        appendLine("  * $recentTxSummary")
+                    } else {
+                        appendLine("- Rincian Riwayat Transaksi Pengguna: Belum ada transaksi yang disimpan.")
+                    }
                     appendLine("- Kurs Valuta Asing Terkini (Live REST API open.er-api.com): $currencyExchangeContext")
                     appendLine("  (Gunakan data kurs ini jika pengguna bertanya tentang konversi nilai uang kas ke USD/valas lain, belanja barang impor, atau kebutuhan konversi mata uang).")
                 }
