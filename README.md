@@ -2,7 +2,7 @@
 
   <img src="app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" alt="KasKu Logo" width="110" height="110" style="border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
 
-  # 💳 KasKu — Smart Cash Flow & Expense Tracker
+  # 💳 KasKu: Smart Cash Flow & Expense Tracker
 
   **Aplikasi Manajemen Keuangan Pribadi Cerdas & Pelacak Pengeluaran Modern berbasis Android dengan Jetpack Compose, Material 3, dan Integrasi Kecerdasan Buatan (Google Gemini & LM Studio).**
 
