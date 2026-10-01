@@ -747,7 +747,10 @@ fun AiChatScreen(
                             message = msg,
                             onCopyText = {
                                 clipboardManager.setText(AnnotatedString(msg.text))
-                                Toast.makeText(context, "Pesan disalin", Toast.LENGTH_SHORT).show()
+                                com.example.kasku.ui.components.TopNotif.showSuccess(
+                                    title = "Teks Disalin",
+                                    message = "Pesan berhasil disalin ke papan klip"
+                                )
                             }
                         )
                     }

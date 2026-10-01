@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.kasku.ui.components.TopNotif
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -45,6 +47,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -125,10 +128,7 @@ fun SettingsScreen(
     var lmModelInput by remember(savedLmModel) { mutableStateOf(savedLmModel) }
 
     var isTestingConnection by remember { mutableStateOf(false) }
-    var testResult by remember { mutableStateOf<String?>(null) }
-    var isTestSuccess by remember { mutableStateOf(false) }
     var showWalletManager by remember { mutableStateOf(false) }
-    var showResetOnboardingSnackbar by remember { mutableStateOf(false) }
 
     if (showWalletManager) {
         WalletManagerSheet(
@@ -198,6 +198,22 @@ fun SettingsScreen(
         )
     }
 
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(currentTutorialStepIndex, isTutorialCompleted) {
+        if (!isTutorialCompleted) {
+            when (currentTutorialStepIndex) {
+                0, 1 -> lazyListState.animateScrollToItem(0)
+                2 -> lazyListState.animateScrollToItem(4) // Scroll ke Dompet & Sumber Dana
+                3 -> lazyListState.animateScrollToItem(5) // Scroll ke Konfigurasi KasKu AI agar terlihat penuh
+            }
+        }
+    }
+
+    LaunchedEffect(lazyListState.firstVisibleItemScrollOffset, lazyListState.firstVisibleItemIndex) {
+        rootCoordinates?.let { updateAllBounds(it) }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -208,6 +224,7 @@ fun SettingsScreen(
             }
     ) {
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
@@ -542,6 +559,10 @@ fun SettingsScreen(
                                         isCurrencyDropdownExpanded = false
                                         com.example.kasku.ui.components.CurrencyConfig.currentCurrency = code
                                         scope.launch { userPreferences.saveSelectedCurrency(code) }
+                                        TopNotif.showInfo(
+                                            title = "Mata Uang Diubah",
+                                            message = "Format kas kini menggunakan $name ($symbol)"
+                                        )
                                     }
                                 )
                             }
@@ -876,15 +897,19 @@ fun SettingsScreen(
                                         onClick = {
                                             if (geminiKeyInput.isNotBlank()) {
                                                 isFetchingModels = true
-                                                fetchModelStatusMessage = null
-                                                fetchModelError = null
                                                 scope.launch {
                                                     val res = aiService.fetchAvailableGeminiModels(geminiKeyInput)
                                                     res.onSuccess { models ->
                                                         fetchedGeminiModels = models
-                                                        fetchModelStatusMessage = "Sukses: ${models.size} model aktif terverifikasi dari Google API."
+                                                        TopNotif.showSuccess(
+                                                            title = "Model Berhasil Disinkron",
+                                                            message = "${models.size} model aktif terdeteksi dari Google API"
+                                                        )
                                                     }.onFailure { err ->
-                                                        fetchModelError = "Gagal: ${err.localizedMessage}"
+                                                        TopNotif.showError(
+                                                            title = "Gagal Sinkronisasi Model",
+                                                            message = err.localizedMessage ?: "Periksa API Key atau koneksi internet"
+                                                        )
                                                     }
                                                     isFetchingModels = false
                                                 }
@@ -909,25 +934,6 @@ fun SettingsScreen(
                                         }
                                     }
                                 }
-                            }
-
-                            if (fetchModelStatusMessage != null) {
-                                Text(
-                                    text = fetchModelStatusMessage!!,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        color = MonzoIncomeGreen,
-                                        fontSize = 11.5.sp
-                                    )
-                                )
-                            }
-                            if (fetchModelError != null) {
-                                Text(
-                                    text = fetchModelError!!,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        color = MonzoExpenseRed,
-                                        fontSize = 11.5.sp
-                                    )
-                                )
                             }
 
                             // Pilihan Model Gemini (Dropdown Dinamis + Kustom)
@@ -1037,6 +1043,10 @@ fun SettingsScreen(
                                                 geminiModelInput = modelId
                                                 isModelDropdownExpanded = false
                                                 scope.launch { aiPreferences.saveGeminiConfig(geminiKeyInput, modelId) }
+                                                TopNotif.showSuccess(
+                                                    title = "Model AI Dipilih",
+                                                    message = label
+                                                )
                                             }
                                         )
                                     }
@@ -1118,6 +1128,10 @@ fun SettingsScreen(
                                                 if (clean.isNotBlank()) {
                                                     geminiModelInput = clean
                                                     scope.launch { aiPreferences.saveGeminiConfig(geminiKeyInput, clean) }
+                                                    TopNotif.showSuccess(
+                                                        title = "Model Kustom Diterapkan",
+                                                        message = clean
+                                                    )
                                                 }
                                                 showCustomModelDialog = false
                                             }
@@ -1185,7 +1199,6 @@ fun SettingsScreen(
                             .clickable(enabled = !isTestingConnection) {
                                 scope.launch {
                                     isTestingConnection = true
-                                    testResult = null
                                     try {
                                         val res = aiService.testConnection(
                                             provider = currentProvider,
@@ -1195,15 +1208,21 @@ fun SettingsScreen(
                                             lmStudioModel = lmModelInput
                                         )
                                         res.onSuccess {
-                                            isTestSuccess = true
-                                            testResult = it
+                                            TopNotif.showSuccess(
+                                                title = "Koneksi Berhasil!",
+                                                message = "Respon: ONLINE"
+                                            )
                                         }.onFailure {
-                                            isTestSuccess = false
-                                            testResult = "Gagal terhubung: ${it.localizedMessage}"
+                                            TopNotif.showError(
+                                                title = "Koneksi AI Gagal",
+                                                message = it.localizedMessage ?: "Gagal terhubung ke layanan AI"
+                                            )
                                         }
                                     } catch (e: Exception) {
-                                        isTestSuccess = false
-                                        testResult = "Error: ${e.localizedMessage}"
+                                        TopNotif.showError(
+                                            title = "Error Koneksi",
+                                            message = e.localizedMessage ?: "Terjadi kesalahan koneksi"
+                                        )
                                     } finally {
                                         isTestingConnection = false
                                     }
@@ -1247,40 +1266,6 @@ fun SettingsScreen(
                                         color = MonzoTextPrimary,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 12.5.sp
-                                    )
-                                )
-                            }
-                        }
-                    }
-
-                    // Banner Hasil Uji Koneksi
-                    testResult?.let { msg ->
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (isTestSuccess) Color(0xFFE8F7F0) else MonzoCoralPillLight,
-                            border = BorderStroke(
-                                1.dp,
-                                if (isTestSuccess) MonzoIncomeGreen.copy(alpha = 0.4f) else MonzoExpenseRed.copy(alpha = 0.4f)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (isTestSuccess) Icons.Filled.CheckCircle else Icons.Filled.Error,
-                                    contentDescription = null,
-                                    tint = if (isTestSuccess) MonzoIncomeGreen else MonzoExpenseRed,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Text(
-                                    text = msg,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        color = if (isTestSuccess) MonzoIncomeGreen else MonzoExpenseRed,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 11.5.sp
                                     )
                                 )
                             }
@@ -1348,6 +1333,10 @@ fun SettingsScreen(
                                 .clickable {
                                     scope.launch {
                                         userPreferences.resetTutorial()
+                                        TopNotif.showInfo(
+                                            title = "Panduan Fitur Aktif",
+                                            message = "Tutorial interaktif dimulai dari Beranda"
+                                        )
                                         onNavigateToDashboard()
                                     }
                                 },
@@ -1386,7 +1375,10 @@ fun SettingsScreen(
                                 .clickable {
                                     scope.launch {
                                         userPreferences.resetOnboarding()
-                                        showResetOnboardingSnackbar = true
+                                        TopNotif.showInfo(
+                                            title = "Onboarding Direset",
+                                            message = "Modal penyiapan awal akan muncul saat kembali ke Beranda"
+                                        )
                                     }
                                 },
                             shape = RoundedCornerShape(12.dp),
@@ -1415,16 +1407,6 @@ fun SettingsScreen(
                                 )
                             }
                         }
-                    }
-
-                    if (showResetOnboardingSnackbar) {
-                        Text(
-                            text = "Onboarding direset! Saat aplikasi dibuka ulang atau kembali ke Beranda, modal penyiapan awal akan muncul kembali.",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                color = MonzoTeal,
-                                fontSize = 11.5.sp
-                            )
-                        )
                     }
                 }
             }

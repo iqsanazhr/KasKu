@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -152,6 +154,22 @@ fun AiInsightsScreen(
         )
     }
 
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(currentTutorialStepIndex, isTutorialCompleted) {
+        if (!isTutorialCompleted) {
+            when (currentTutorialStepIndex) {
+                0 -> lazyListState.animateScrollToItem(0)
+                1 -> lazyListState.animateScrollToItem(2) // Scroll ke Breakdown Kategori
+                2 -> lazyListState.animateScrollToItem(3) // Scroll ke Rincian Arus Kas
+            }
+        }
+    }
+
+    LaunchedEffect(lazyListState.firstVisibleItemScrollOffset, lazyListState.firstVisibleItemIndex) {
+        rootCoordinates?.let { updateAllBounds(it) }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -165,6 +183,7 @@ fun AiInsightsScreen(
         // MAIN SCROLLABLE CONTENT
         // ==========================================
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),

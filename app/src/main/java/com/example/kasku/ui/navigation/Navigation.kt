@@ -189,32 +189,3 @@ fun TelegramLiquidGlassBottomBar(
         }
     }
 }
-
-/**
- * Backward-compatibility aliases
- */
-@Composable
-fun IPhoneDynamicIslandBottomBar(
-    currentRoute: String,
-    onNavigate: (Screen) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TelegramLiquidGlassBottomBar(
-        currentRoute = currentRoute,
-        onNavigate = onNavigate,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun AppleFloatingBottomBar(
-    currentRoute: String,
-    onNavigate: (Screen) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TelegramLiquidGlassBottomBar(
-        currentRoute = currentRoute,
-        onNavigate = onNavigate,
-        modifier = modifier
-    )
-}

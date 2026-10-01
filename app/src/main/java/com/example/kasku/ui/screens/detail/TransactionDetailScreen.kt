@@ -274,6 +274,10 @@ fun TransactionDetailScreen(
                                 showDeleteDialog = false
                                 scope.launch {
                                     repository.deleteTransaction(transaction)
+                                    com.example.kasku.ui.components.TopNotif.showInfo(
+                                        title = "Transaksi Dihapus",
+                                        message = "Catatan transaksi telah dihapus"
+                                    )
                                     onNavigateBack()
                                 }
                             },

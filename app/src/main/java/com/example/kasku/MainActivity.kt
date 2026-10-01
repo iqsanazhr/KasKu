@@ -33,8 +33,6 @@ import com.example.kasku.data.preferences.AiPreferences
 import com.example.kasku.data.preferences.UserPreferences
 import com.example.kasku.data.remote.AiService
 import com.example.kasku.data.repository.KasKuRepository
-import com.example.kasku.ui.navigation.AppleFloatingBottomBar
-import com.example.kasku.ui.navigation.IPhoneDynamicIslandBottomBar
 import com.example.kasku.ui.navigation.TelegramLiquidGlassBottomBar
 import com.example.kasku.ui.navigation.Screen
 import com.example.kasku.ui.screens.chat.AiChatScreen
@@ -136,6 +134,9 @@ class MainActivity : ComponentActivity() {
                                         onCompleted = { }
                                     )
                                 }
+
+                                // Notifikasi Melayang Atas (TopNotif)
+                                com.example.kasku.ui.components.TopNotifHost()
                             }
                         }
                     }

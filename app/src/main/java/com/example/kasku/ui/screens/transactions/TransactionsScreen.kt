@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -197,6 +199,22 @@ fun TransactionsScreen(
         )
     }
 
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(currentTutorialStepIndex, isTutorialCompleted) {
+        if (!isTutorialCompleted) {
+            when (currentTutorialStepIndex) {
+                0, 1 -> lazyListState.animateScrollToItem(0)
+                2 -> lazyListState.animateScrollToItem(3)
+                3 -> lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
+
+    LaunchedEffect(lazyListState.firstVisibleItemScrollOffset, lazyListState.firstVisibleItemIndex) {
+        rootCoordinates?.let { updateAllBounds(it) }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -207,6 +225,7 @@ fun TransactionsScreen(
             }
     ) {
         LazyColumn(
+            state = lazyListState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
@@ -592,6 +611,10 @@ fun TransactionsScreen(
                         onClick = {
                             viewModel.deleteTransaction(tx)
                             transactionToDelete = null
+                            com.example.kasku.ui.components.TopNotif.showInfo(
+                                title = "Transaksi Dihapus",
+                                message = "Catatan transaksi telah dihapus dari histori"
+                            )
                         }
                     ) {
                         Text(
