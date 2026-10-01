@@ -52,10 +52,13 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.kasku.ui.screens.detail.TransactionDetailScreen
 
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -157,7 +160,7 @@ fun MainAppContainer(
         containerColor = CeramicBackground,
         contentWindowInsets = WindowInsets.statusBars,
         bottomBar = {
-            if (!WindowInsets.isImeVisible && currentRoute != Screen.Scanner.route && currentRoute != Screen.AiChat.route) {
+            if (!WindowInsets.isImeVisible && currentRoute != Screen.Scanner.route && currentRoute != Screen.AiChat.route && !currentRoute.startsWith("transaction_detail")) {
                 TelegramLiquidGlassBottomBar(
                     currentRoute = currentRoute,
                     onNavigate = { screen ->
@@ -215,7 +218,23 @@ fun MainAppContainer(
                 TransactionsScreen(
                     repository = repository,
                     aiService = aiService,
-                    aiPreferences = aiPreferences
+                    aiPreferences = aiPreferences,
+                    onTransactionClick = { txId ->
+                        navController.navigate(Screen.TransactionDetail.createRoute(txId))
+                    }
+                )
+            }
+            composable(
+                route = Screen.TransactionDetail.route,
+                arguments = listOf(
+                    navArgument("transactionId") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val transactionId = backStackEntry.arguments?.getLong("transactionId") ?: 0L
+                TransactionDetailScreen(
+                    transactionId = transactionId,
+                    repository = repository,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
             composable(Screen.Scanner.route) {

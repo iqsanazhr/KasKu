@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" alt="KasKu Logo" width="110" height="110" style="border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" alt="KasKu Logo" width="110" height="110" style="border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
 
   # 💳 KasKu: Smart Cash Flow & Expense Tracker
 

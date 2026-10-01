@@ -66,6 +66,9 @@ sealed class Screen(
     object Insights : Screen("insights", "Tren", Icons.AutoMirrored.Filled.TrendingUp, Icons.AutoMirrored.Outlined.TrendingUp)
     object AiChat : Screen("ai_chat", "KasKu AI", Icons.Filled.AutoAwesome, Icons.Outlined.AutoAwesome, isAiSpecial = true)
     object Settings : Screen("settings", "Setelan", Icons.Filled.Settings, Icons.Outlined.Settings)
+    object TransactionDetail : Screen("transaction_detail/{transactionId}", "Detail", Icons.Filled.SwapHoriz, Icons.Outlined.SwapHoriz) {
+        fun createRoute(transactionId: Long): String = "transaction_detail/$transactionId"
+    }
 }
 
 val navItems = listOf(

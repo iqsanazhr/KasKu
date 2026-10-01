@@ -283,6 +283,13 @@ fun SettingsScreen(
         }
 
         // ==========================================
+        // 2B. KARTU KURS MATA UANG (RETROFIT REST API & UISTATE)
+        // ==========================================
+        item {
+            com.example.kasku.ui.screens.currency.CurrencyExchangeCard()
+        }
+
+        // ==========================================
         // 3. KARTU KELOLA DOMPET & AKUN
         // ==========================================
         item {

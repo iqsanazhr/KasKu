@@ -106,6 +106,7 @@ fun TransactionsScreen(
     aiService: AiService,
     aiPreferences: AiPreferences,
     modifier: Modifier = Modifier,
+    onTransactionClick: ((Long) -> Unit)? = null,
     viewModel: TransactionsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = TransactionsViewModel.Factory(repository, aiService, aiPreferences)
     )
@@ -438,6 +439,7 @@ fun TransactionsScreen(
                 items(filteredTransactions, key = { it.id }) { tx ->
                     MonzoTransactionCard(
                         transaction = tx,
+                        onClick = { onTransactionClick?.invoke(tx.id) },
                         onDeleteClick = { transactionToDelete = tx }
                     )
                 }
@@ -554,6 +556,7 @@ fun TransactionsScreen(
 fun MonzoTransactionCard(
     transaction: Transaction,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     onDeleteClick: (() -> Unit)? = null
 ) {
     val isIncome = transaction.type == TransactionType.INCOME
@@ -586,6 +589,7 @@ fun MonzoTransactionCard(
     Surface(
         modifier = modifier
             .fillMaxWidth()
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .shadow(
                 elevation = 2.dp,
                 shape = RoundedCornerShape(18.dp),

@@ -19,12 +19,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.kasku.ui.common.UiState
 
 class ReceiptScannerViewModel(
     private val repository: KasKuRepository,
     private val aiService: AiService,
     private val aiPreferences: AiPreferences
 ) : ViewModel() {
+
+    // Standardized M3/MVVM UiState (Loading, Success, Error, Idle)
+    private val _scanUiState = MutableStateFlow<UiState<ReceiptScanResult>>(UiState.Idle)
+    val scanUiState: StateFlow<UiState<ReceiptScanResult>> = _scanUiState.asStateFlow()
 
     private val _isScanning = MutableStateFlow(false)
     val isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
@@ -46,6 +51,7 @@ class ReceiptScannerViewModel(
 
     fun scanReceiptImage(imageBytes: ByteArray) {
         viewModelScope.launch {
+            _scanUiState.value = UiState.Loading
             _isScanning.value = true
             _errorMessage.value = null
             _saveSuccessMessage.value = null
@@ -68,12 +74,17 @@ class ReceiptScannerViewModel(
                 )
 
                 result.onSuccess { extracted ->
+                    _scanUiState.value = UiState.Success(extracted)
                     _scanResult.value = extracted
                 }.onFailure { err ->
-                    _errorMessage.value = "Gagal memindai: ${err.localizedMessage}"
+                    val errorMsg = "Gagal memindai: ${err.localizedMessage}"
+                    _scanUiState.value = UiState.Error(errorMsg)
+                    _errorMessage.value = errorMsg
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Error: ${e.localizedMessage}"
+                val errorMsg = "Error: ${e.localizedMessage}"
+                _scanUiState.value = UiState.Error(errorMsg)
+                _errorMessage.value = errorMsg
             } finally {
                 _isScanning.value = false
             }
