@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.NetworkWifi
@@ -283,7 +284,183 @@ fun SettingsScreen(
         }
 
         // ==========================================
-        // 2B. KARTU KURS MATA UANG (RETROFIT REST API & UISTATE)
+        // 2B. KARTU PILIHAN MATA UANG APLIKASI
+        // ==========================================
+        item {
+            val selectedCurrency by userPreferences.selectedCurrencyFlow.collectAsState(initial = "IDR")
+            var isCurrencyDropdownExpanded by remember { mutableStateOf(false) }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 2.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = Color(0x08000000),
+                        spotColor = Color(0x10000000)
+                    ),
+                shape = RoundedCornerShape(20.dp),
+                color = MonzoSurface,
+                border = BorderStroke(1.dp, MonzoBorder)
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(42.dp),
+                                shape = CircleShape,
+                                color = MonzoTeal.copy(alpha = 0.12f)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Money,
+                                        contentDescription = null,
+                                        tint = MonzoTeal,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            }
+                            Column {
+                                Text(
+                                    text = "Mata Uang Aplikasi",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MonzoTextPrimary,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                                Text(
+                                    text = "Pilih mata uang utama untuk seluruh transaksi",
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = MonzoTextSecondary,
+                                        fontSize = 12.sp
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    // Selector Dropdown Box
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        val currentCurrencyInfo = com.example.kasku.ui.components.CurrencyConfig.supportedCurrencies
+                            .firstOrNull { it.first == selectedCurrency }
+                        val currentLabel = currentCurrencyInfo?.let { "${it.second.first} (${it.first} - ${it.second.second})" }
+                            ?: "$selectedCurrency (${com.example.kasku.ui.components.CurrencyConfig.getSymbol(selectedCurrency)})"
+
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { isCurrencyDropdownExpanded = true },
+                            shape = RoundedCornerShape(14.dp),
+                            color = MonzoElevated,
+                            border = BorderStroke(1.dp, if (isCurrencyDropdownExpanded) MonzoTeal else MonzoBorder)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = currentLabel,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MonzoTextPrimary,
+                                            fontSize = 13.5.sp
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = "Simbol Aktif: ${com.example.kasku.ui.components.CurrencyConfig.getSymbol(selectedCurrency)}",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            color = MonzoTeal,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    )
+                                }
+                                Icon(
+                                    imageVector = if (isCurrencyDropdownExpanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                                    contentDescription = "Pilih Mata Uang",
+                                    tint = MonzoTextSecondary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+
+                        DropdownMenu(
+                            expanded = isCurrencyDropdownExpanded,
+                            onDismissRequest = { isCurrencyDropdownExpanded = false },
+                            modifier = Modifier
+                                .background(MonzoSurface)
+                                .clip(RoundedCornerShape(14.dp))
+                        ) {
+                            com.example.kasku.ui.components.CurrencyConfig.supportedCurrencies.forEach { (code, pair) ->
+                                val (name, symbol) = pair
+                                val isSelected = selectedCurrency == code
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column(modifier = Modifier.padding(vertical = 2.dp)) {
+                                                Text(
+                                                    text = "$name ($code)",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                        color = if (isSelected) MonzoTeal else MonzoTextPrimary,
+                                                        fontSize = 13.sp
+                                                    )
+                                                )
+                                                Text(
+                                                    text = "Simbol: $symbol",
+                                                    style = MaterialTheme.typography.labelSmall.copy(
+                                                        color = MonzoTextSecondary,
+                                                        fontSize = 11.sp
+                                                    )
+                                                )
+                                            }
+                                            if (isSelected) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.CheckCircle,
+                                                    contentDescription = null,
+                                                    tint = MonzoTeal,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        }
+                                    },
+                                    onClick = {
+                                        isCurrencyDropdownExpanded = false
+                                        com.example.kasku.ui.components.CurrencyConfig.currentCurrency = code
+                                        scope.launch { userPreferences.saveSelectedCurrency(code) }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ==========================================
+        // 2C. KARTU KURS MATA UANG (RETROFIT REST API & UISTATE)
         // ==========================================
         item {
             com.example.kasku.ui.screens.currency.CurrencyExchangeCard()
@@ -569,9 +746,101 @@ fun SettingsScreen(
                                 singleLine = true
                             )
 
-                            // Pilihan Model Gemini (Dropdown Menu Tanpa Emoticon)
+                            var isFetchingModels by remember { mutableStateOf(false) }
+                            var fetchedGeminiModels by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
+                            var fetchModelStatusMessage by remember { mutableStateOf<String?>(null) }
+                            var fetchModelError by remember { mutableStateOf<String?>(null) }
+
+                            // Tombol Cek Izin & Sinkronisasi Model Otomatis dari API Key
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                androidx.compose.material3.OutlinedButton(
+                                    onClick = {
+                                        if (geminiKeyInput.isNotBlank()) {
+                                            isFetchingModels = true
+                                            fetchModelStatusMessage = null
+                                            fetchModelError = null
+                                            scope.launch {
+                                                val res = aiService.fetchAvailableGeminiModels(geminiKeyInput)
+                                                res.onSuccess { models ->
+                                                    fetchedGeminiModels = models
+                                                    fetchModelStatusMessage = "Sukses: ${models.size} model aktif terverifikasi dari Google API."
+                                                }.onFailure { err ->
+                                                    fetchModelError = "Gagal memuat: ${err.localizedMessage}"
+                                                }
+                                                isFetchingModels = false
+                                            }
+                                        }
+                                    },
+                                    enabled = !isFetchingModels && geminiKeyInput.isNotBlank(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                                        contentColor = MonzoTeal
+                                    ),
+                                    border = BorderStroke(1.dp, if (geminiKeyInput.isNotBlank()) MonzoTeal.copy(alpha = 0.5f) else MonzoBorder)
+                                ) {
+                                    if (isFetchingModels) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(14.dp),
+                                            color = MonzoTeal,
+                                            strokeWidth = 2.dp
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Memeriksa API...", fontSize = 11.5.sp)
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Default.Refresh,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("Cek Izin & Sinkron Model", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold)
+                                    }
+                                }
+
+                                if (fetchedGeminiModels.isNotEmpty()) {
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = MonzoIncomeGreen.copy(alpha = 0.12f)
+                                    ) {
+                                        Text(
+                                            text = "${fetchedGeminiModels.size} Model Terhubung",
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                color = MonzoIncomeGreen,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 11.sp
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (fetchModelStatusMessage != null) {
+                                Text(
+                                    text = fetchModelStatusMessage!!,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = MonzoIncomeGreen,
+                                        fontSize = 11.5.sp
+                                    )
+                                )
+                            }
+                            if (fetchModelError != null) {
+                                Text(
+                                    text = fetchModelError!!,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = MonzoExpenseRed,
+                                        fontSize = 11.5.sp
+                                    )
+                                )
+                            }
+
+                            // Pilihan Model Gemini (Dropdown Dinamis + Kustom)
                             Text(
-                                text = "Pilihan Model Gemini:",
+                                text = if (fetchedGeminiModels.isNotEmpty()) "Pilihan Model (Dinamis dari API):" else "Pilihan Model Gemini:",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = MonzoTextPrimary,
@@ -580,17 +849,23 @@ fun SettingsScreen(
                             )
 
                             var isModelDropdownExpanded by remember { mutableStateOf(false) }
-                            val geminiModelOptions = remember {
+                            var showCustomModelDialog by remember { mutableStateOf(false) }
+                            val defaultGeminiModels = remember {
                                 listOf(
+                                    "gemini-3.8-flash" to "Gemini 3.8 Flash (Ultra Cepat & Mutakhir)",
+                                    "gemini-3.6-flash" to "Gemini 3.6 Flash (Cepat & Akurat)",
+                                    "gemini-3.5-flash" to "Gemini 3.5 Flash (Cerdas & Responsif)",
+                                    "gemini-3.5-flash-lite" to "Gemini 3.5 Flash Lite (Hemat Kuota)",
                                     "gemini-2.5-flash" to "Gemini 2.5 Flash (Rekomendasi Cepat)",
-                                    "gemini-2.5-flash-lite" to "Gemini 2.5 Flash Lite (Hemat Kuota)",
+                                    "gemini-2.5-flash-lite" to "Gemini 2.5 Flash Lite (Ringan & Hemat Kuota)",
                                     "gemini-2.5-pro" to "Gemini 2.5 Pro (Penalaran Kompleks)",
                                     "gemini-1.5-flash" to "Gemini 1.5 Flash (Stabil)",
                                     "gemini-1.5-pro" to "Gemini 1.5 Pro (Analisis Mendalam)"
                                 )
                             }
+                            val geminiModelOptions = if (fetchedGeminiModels.isNotEmpty()) fetchedGeminiModels else defaultGeminiModels
                             val selectedModelLabel = geminiModelOptions.firstOrNull { it.first == geminiModelInput }?.second
-                                ?: geminiModelInput.ifBlank { "Gemini 2.5 Flash (Rekomendasi Cepat)" }
+                                ?: geminiModelInput.ifBlank { "Gemini 3.8 Flash (Ultra Cepat & Mutakhir)" }
 
                             Box(modifier = Modifier.fillMaxWidth()) {
                                 Surface(
@@ -621,7 +896,7 @@ fun SettingsScreen(
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             Text(
-                                                text = "ID: ${geminiModelInput.ifBlank { "gemini-2.5-flash" }}",
+                                                text = "ID: ${geminiModelInput.ifBlank { "gemini-3.8-flash" }}",
                                                 style = MaterialTheme.typography.labelSmall.copy(
                                                     color = MonzoTeal,
                                                     fontSize = 11.sp
@@ -673,7 +948,99 @@ fun SettingsScreen(
                                             }
                                         )
                                     }
+
+                                    androidx.compose.material3.HorizontalDivider(
+                                        color = MonzoBorder,
+                                        thickness = 1.dp
+                                    )
+
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Edit,
+                                                    contentDescription = null,
+                                                    tint = MonzoTeal,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                                Text(
+                                                    text = "Kustom / Masukkan Model ID Lainnya...",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                                        fontWeight = FontWeight.Medium,
+                                                        color = MonzoTeal,
+                                                        fontSize = 12.5.sp
+                                                    )
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            isModelDropdownExpanded = false
+                                            showCustomModelDialog = true
+                                        }
+                                    )
                                 }
+                            }
+
+                            if (showCustomModelDialog) {
+                                var tempModelInput by remember { mutableStateOf(geminiModelInput) }
+                                androidx.compose.material3.AlertDialog(
+                                    onDismissRequest = { showCustomModelDialog = false },
+                                    title = {
+                                        Text(
+                                            text = "Input Model Gemini Kustom",
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                color = MonzoTextPrimary
+                                            )
+                                        )
+                                    },
+                                    text = {
+                                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            Text(
+                                                text = "Ketikkan ID model Google Gemini yang ingin digunakan (contoh: gemini-3.8-flash, gemini-3.6-flash, gemini-exp-1206):",
+                                                style = MaterialTheme.typography.bodySmall.copy(color = MonzoTextSecondary)
+                                            )
+                                            OutlinedTextField(
+                                                value = tempModelInput,
+                                                onValueChange = { tempModelInput = it },
+                                                singleLine = true,
+                                                placeholder = { Text("gemini-3.8-flash") },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                colors = OutlinedTextFieldDefaults.colors(
+                                                    focusedBorderColor = MonzoTeal,
+                                                    unfocusedBorderColor = MonzoBorder,
+                                                    focusedTextColor = MonzoTextPrimary,
+                                                    unfocusedTextColor = MonzoTextPrimary,
+                                                    cursorColor = MonzoTeal
+                                                )
+                                            )
+                                        }
+                                    },
+                                    confirmButton = {
+                                        androidx.compose.material3.TextButton(
+                                            onClick = {
+                                                val clean = tempModelInput.trim()
+                                                if (clean.isNotBlank()) {
+                                                    geminiModelInput = clean
+                                                    scope.launch { aiPreferences.saveGeminiConfig(geminiKeyInput, clean) }
+                                                }
+                                                showCustomModelDialog = false
+                                            }
+                                        ) {
+                                            Text("Terapkan", color = MonzoTeal, fontWeight = FontWeight.Bold)
+                                        }
+                                    },
+                                    dismissButton = {
+                                        androidx.compose.material3.TextButton(onClick = { showCustomModelDialog = false }) {
+                                            Text("Batal", color = MonzoTextSecondary)
+                                        }
+                                    },
+                                    containerColor = MonzoSurface,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
                             }
                         }
                     } else {

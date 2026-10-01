@@ -115,6 +115,12 @@ class AiService {
                 }
                 Kategori yang disarankan harus salah satu dari:
                 ["Makanan & Minuman", "Belanja & Supermarket", "Transportasi", "Tagihan & Utilitas", "Hiburan & Rekreasi", "Kesehatan", "Pendidikan & Buku"]
+
+                Pedoman Mata Uang Asing & Kurs Valas:
+                Jika struk bertransaksi dalam valuta asing (seperti USD $, SGD S$, EUR €, MYR RM, JPY ¥, GBP £):
+                1. Kenali simbol mata uang aslinya.
+                2. Konversikan totalAmount ke estimasi Rupiah (IDR) berdasarkan kurs referensi wajar (misal: 1 USD ≈ Rp 16.200, 1 SGD ≈ Rp 12.200, 1 EUR ≈ Rp 17.500, 1 MYR ≈ Rp 3.650, 1 JPY ≈ Rp 105, 1 GBP ≈ Rp 20.800).
+                3. Cantumkan rincian nilai asli mata uang tersebut pada field "notes" (contoh: "Dikonversi dari ${'$'}14.50 USD dengan estimasi kurs 1 USD = Rp 16.200").
             """.trimIndent()
 
             val rawResponse = when (provider) {
@@ -216,6 +222,59 @@ class AiService {
                 actionableTips = parsedJsonObj["actionableTips"]?.jsonArray?.map { it.jsonPrimitive.content } ?: emptyList()
             )
             Result.success(summary)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun fetchAvailableGeminiModels(apiKey: String): Result<List<Pair<String, String>>> = withContext(Dispatchers.IO) {
+        try {
+            val cleanKey = apiKey.trim()
+            if (cleanKey.isBlank()) {
+                return@withContext Result.failure(IllegalArgumentException("API Key Gemini tidak boleh kosong."))
+            }
+            val url = "https://generativelanguage.googleapis.com/v1beta/models?key=$cleanKey"
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                val respBody = response.body?.string().orEmpty()
+                if (!response.isSuccessful) {
+                    throw RuntimeException("Gagal menghubungi Google Gemini (${response.code}): $respBody")
+                }
+                val rootJson = json.parseToJsonElement(respBody).jsonObject
+                val modelsArray = rootJson["models"]?.jsonArray ?: emptyList()
+                val resultList = mutableListOf<Pair<String, String>>()
+
+                for (item in modelsArray) {
+                    val obj = item.jsonObject
+                    val supportedMethods = obj["supportedGenerationMethods"]?.jsonArray?.mapNotNull { it.jsonPrimitive.content } ?: emptyList()
+                    if ("generateContent" in supportedMethods) {
+                        val rawName = obj["name"]?.jsonPrimitive?.content ?: continue
+                        val modelId = rawName.removePrefix("models/")
+                        val displayName = obj["displayName"]?.jsonPrimitive?.content ?: modelId
+                        resultList.add(modelId to displayName)
+                    }
+                }
+
+                if (resultList.isEmpty()) {
+                    throw RuntimeException("Tidak ada model generateContent yang ditemukan untuk API Key ini.")
+                }
+
+                // Prioritaskan model flash dan model terkini di urutan atas
+                val sortedList = resultList.sortedWith(
+                    compareByDescending<Pair<String, String>> { it.first.contains("3.8") }
+                        .thenByDescending { it.first.contains("3.6") }
+                        .thenByDescending { it.first.contains("3.5") }
+                        .thenByDescending { it.first.contains("2.5-flash") }
+                        .thenByDescending { it.first.contains("flash") }
+                        .thenBy { it.first }
+                )
+
+                Result.success(sortedList)
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

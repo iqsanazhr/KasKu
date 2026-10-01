@@ -80,6 +80,11 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val selectedCurrency by userPreferences.selectedCurrencyFlow.collectAsState(initial = "IDR")
+            androidx.compose.runtime.LaunchedEffect(selectedCurrency) {
+                com.example.kasku.ui.components.CurrencyConfig.currentCurrency = selectedCurrency
+            }
+
             KasKuTheme {
                 val isOnboardingCompleted by userPreferences.isOnboardingCompletedFlow.collectAsState(initial = null)
                 var isSplashShowing by remember { mutableStateOf(true) }

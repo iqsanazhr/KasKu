@@ -7,6 +7,7 @@
   **Aplikasi Manajemen Keuangan Pribadi Cerdas & Pelacak Pengeluaran Modern berbasis Android dengan Jetpack Compose, Material 3, dan Integrasi Kecerdasan Buatan (Google Gemini & LM Studio).**
 
   <p align="center">
+    <a href="https://github.com/iqsanazhr/KasKu/releases"><img src="https://img.shields.io/badge/Release-v1.1.0-blue?style=for-the-badge&logo=github" alt="Release"/></a>
     <img src="https://img.shields.io/badge/Platform-Android_10+-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android"/>
     <img src="https://img.shields.io/badge/Language-Kotlin_2.0-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin"/>
     <img src="https://img.shields.io/badge/UI-Jetpack_Compose_Material3-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white" alt="Compose"/>
@@ -141,6 +142,8 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
       <h4>Fitur & Fungsionalitas:</h4>
       <ul>
         <li><strong>Profil Pengguna</strong>: Kustomisasi nama pengguna yang digunakan sebagai sapaan personal di Beranda.</li>
+        <li><strong>Multi-Currency System (Pilihan Mata Uang Dinamis)</strong>: Pemilihan mata uang utama aplikasi secara instan dengan dukungan 9 mata uang dunia (🇮🇩 IDR - Rp, 🇺🇸 USD - $, 🇪🇺 EUR - €, 🇸🇬 SGD - S$, 🇲🇾 MYR - RM, 🇯🇵 JPY - ¥, 🇬🇧 GBP - £, 🇦🇺 AUD - A$, 🇸🇦 SAR - SR) yang reaktif mengubah simbol di seluruh layar secara real-time.</li>
+        <li><strong>Kurs Valuta Asing Real-Time (Retrofit REST API)</strong>: Kartu kurs nilai tukar valas live dari endpoint <code>open.er-api.com</code> dengan arsitektur <code>UiState</code> (Idle, Loading, Success, Error) dan tombol refresh interaktif.</li>
         <li><strong>Manajemen Dompet</strong>: Pengaturan saldo awal, penambahan rekening bank, e-wallet, atau kas tunai.</li>
         <li><strong>Dual AI Engine Support</strong>:
           <ul>
@@ -148,7 +151,8 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
             <li><strong>LM Studio (Local LLM)</strong>: Opsi privat untuk menjalankan model bahasa lokal tanpa koneksi internet luar.</li>
           </ul>
         </li>
-        <li><strong>Pemilih Model Gemini Material 3</strong>: Dropdown bersih berstandar Material 3 untuk memilih model AI resmi (misal: <code>Gemini 2.5 Flash</code>, <code>Gemini 2.5 Pro</code>, <code>Gemini 1.5 Flash</code>).</li>
+        <li><strong>Dynamic Model Discovery Google Gemini</strong>: Tombol <i>"Cek Izin & Sinkron Model"</i> yang secara otomatis menginspeksi endpoint Google Generative Language API dan menampilkan seluruh model aktif yang dapat diakses oleh API Key tersebut (termasuk <code>Gemini 3.8 Flash</code>, <code>Gemini 3.6 Flash</code>, <code>Gemini 2.5 Flash</code>, dll.).</li>
+        <li><strong>Input Model Manual (Kustom)</strong>: Dialog fleksibel untuk mengetikkan nama model ID eksperimental atau model khusus Google lainnya secara bebas.</li>
         <li><strong>Diagnostik Koneksi AI</strong>: Tombol <i>"Uji Koneksi AI (Ping)"</i> untuk memeriksa validitas API key dan status server secara real-time.</li>
         <li><strong>Pusat Panduan</strong>: Tombol <i>"Mulai Tutorial"</i> untuk meninjau kembali tur fitur dan <i>"Reset Onboarding"</i>.</li>
       </ul>
@@ -273,9 +277,28 @@ Untuk mengaktifkan fitur cerdas pemindai struk dan chatbot penasihat finansial:
 
 1. Buka tab **Setelan** di pojok kanan bawah bilah navigasi KasKu.
 2. Pada bagian **Konfigurasi KasKu AI**, tentukan mesin yang ingin digunakan:
-   - **Google Gemini**: Dapatkan API Key gratis di [Google AI Studio](https://aistudio.google.com/). Tempelkan API Key pada kolom input, lalu pilih model yang diinginkan (direkomendasikan: `Gemini 2.5 Flash`).
+   - **Google Gemini**: Dapatkan API Key gratis di [Google AI Studio](https://aistudio.google.com/). Tempelkan API Key pada kolom input, lalu ketuk **"Cek Izin & Sinkron Model"** untuk memuat seluruh model aktif yang tersedia di akun Anda (mendukung hingga `Gemini 3.8 Flash`, `Gemini 3.6 Flash`, `Gemini 2.5 Flash`, atau input manual kustom).
    - **LM Studio (Offline)**: Nyalakan server lokal pada aplikasi LM Studio PC Anda (default: `http://192.168.x.x:1234/v1`) untuk pemrosesan AI 100% tanpa internet.
 3. Ketuk tombol **Uji Koneksi AI (Ping)** untuk memastikan koneksi berhasil terhubung.
+
+---
+
+## 🚀 Catatan Rilis (*Release Changelog*)
+
+### [v1.1.0] - 2026-10-02 (Multi-Currency & Dynamic AI Discovery)
+- 💱 **Sistem Multi-Currency Dinamis**: Pengguna kini dapat memilih 9 mata uang utama dunia (IDR, USD, EUR, SGD, MYR, JPY, GBP, AUD, SAR) dengan pembaruan simbol reaktif seketika di seluruh kartu saldo, grafik, mutasi, dan rincian transaksi.
+- 🌐 **Kurs Valuta Asing Real-Time & AI Grounding**: 
+  - Integrasi Retrofit 2 REST API (`open.er-api.com`) dengan arsitektur `UiState` interaktif.
+  - Asisten Keuangan AI kini dibekali pengetahuan kurs live (Grounding Context) untuk menjawab pertanyaan seputar konversi valas secara presisi.
+  - OCR Vision Scanner otomatis mendeteksi struk valas (USD, SGD, EUR, MYR) dan mengonversikan total ke estimasi Rupiah secara cerdas.
+- 🤖 **Dynamic Google Gemini Model Discovery**: Tombol *"Cek Izin & Sinkron Model"* untuk memeriksa API Key dan memuat seluruh model resmi aktif dari Google Generative Language API (hingga Gemini 3.8 Flash & 3.6 Flash, plus input kustom manual).
+
+### [v1.0.0] - 2026-10-01 (Gold Master Release)
+- 📱 Rilis publik perdana KasKu Smart Cash Flow & Expense Tracker.
+- 🎨 Jetpack Compose UI Material 3 terinspirasi estetika Monzo Digital Bank & Apple HIG.
+- 💾 Arsitektur data lokal reaktif Room SQLite dengan 5 entitas terelasi 3NF.
+- 🧾 CameraX + Gemini Vision OCR untuk pemindaian struk belanja otomatis.
+- 💬 Chatbot Konsultan Finansial berbasis LLM dengan manajemen sesi percakapan.
 
 ---
 

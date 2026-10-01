@@ -28,7 +28,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,12 +52,64 @@ import com.example.kasku.ui.theme.MonzoTextSecondary
 import java.text.NumberFormat
 import java.util.Locale
 
-// Rupiah Currency Formatter
-fun formatRupiah(amount: Double, withPrefix: Boolean = true): String {
-    val localeId = Locale("id", "ID")
-    val format = NumberFormat.getNumberInstance(localeId)
+object CurrencyConfig {
+    var currentCurrency by mutableStateOf("IDR")
+
+    val supportedCurrencies = listOf(
+        "IDR" to ("Rupiah Indonesia" to "Rp"),
+        "USD" to ("US Dollar" to "$"),
+        "EUR" to ("Euro" to "€"),
+        "SGD" to ("Singapore Dollar" to "S$"),
+        "MYR" to ("Ringgit Malaysia" to "RM"),
+        "JPY" to ("Japanese Yen" to "¥"),
+        "GBP" to ("British Pound" to "£"),
+        "AUD" to ("Australian Dollar" to "A$"),
+        "SAR" to ("Saudi Riyal" to "SR")
+    )
+
+    fun getSymbol(code: String = currentCurrency): String {
+        return when (code.uppercase()) {
+            "IDR" -> "Rp "
+            "USD" -> "$ "
+            "EUR" -> "€ "
+            "SGD" -> "S$ "
+            "MYR" -> "RM "
+            "JPY" -> "¥ "
+            "GBP" -> "£ "
+            "AUD" -> "A$ "
+            "SAR" -> "SR "
+            else -> "$code "
+        }
+    }
+}
+
+// Multi-Currency & Rupiah Formatter
+fun formatRupiah(amount: Double, withPrefix: Boolean = true, currencyCode: String? = null): String {
+    val code = currencyCode ?: CurrencyConfig.currentCurrency
+    val locale = when (code.uppercase()) {
+        "IDR" -> Locale("id", "ID")
+        "USD" -> Locale.US
+        "EUR" -> Locale.GERMANY
+        "SGD" -> Locale("en", "SG")
+        "MYR" -> Locale("ms", "MY")
+        "JPY" -> Locale.JAPAN
+        "GBP" -> Locale.UK
+        "AUD" -> Locale("en", "AU")
+        "SAR" -> Locale("ar", "SA")
+        else -> Locale.US
+    }
+    val format = NumberFormat.getNumberInstance(locale)
+    if (code.uppercase() == "IDR" || code.uppercase() == "JPY") {
+        format.maximumFractionDigits = 0
+    } else {
+        format.maximumFractionDigits = 2
+    }
     val formattedNumber = format.format(amount)
-    return if (withPrefix) "Rp $formattedNumber" else formattedNumber
+    return if (withPrefix) "${CurrencyConfig.getSymbol(code)}$formattedNumber" else formattedNumber
+}
+
+fun formatCurrency(amount: Double, withPrefix: Boolean = true, currencyCode: String? = null): String {
+    return formatRupiah(amount, withPrefix, currencyCode)
 }
 
 /**

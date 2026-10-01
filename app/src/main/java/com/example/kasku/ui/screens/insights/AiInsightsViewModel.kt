@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -338,6 +339,20 @@ class AiInsightsViewModel(
                     "Belum ada transaksi tercatat"
                 }
 
+                val currencyExchangeContext = try {
+                    withTimeoutOrNull(2500) {
+                        val rates = com.example.kasku.data.remote.currency.CurrencyApiService.create().getExchangeRates("USD").rates
+                        val idr = rates["IDR"] ?: 16200.0
+                        val eur = rates["EUR"] ?: 0.92
+                        val sgd = rates["SGD"] ?: 1.34
+                        val myr = rates["MYR"] ?: 4.45
+                        val jpy = rates["JPY"] ?: 152.0
+                        "1 USD = Rp ${formatRupiah(idr, false)} | 1 EUR = €$eur | 1 SGD = S$$sgd | 1 MYR = RM$myr | 1 JPY = ¥$jpy"
+                    } ?: "1 USD ≈ Rp 16.200 | 1 SGD ≈ Rp 12.200 | 1 EUR ≈ Rp 17.500 | 1 MYR ≈ Rp 3.650"
+                } catch (e: Exception) {
+                    "1 USD ≈ Rp 16.200 | 1 SGD ≈ Rp 12.200 | 1 EUR ≈ Rp 17.500 | 1 MYR ≈ Rp 3.650"
+                }
+
                 val financialContext = buildString {
                     appendLine("DATA KEUANGAN & DOMPET PENGGUNA TERKINI:")
                     appendLine("- Total Saldo Seluruh Dompet: ${formatRupiah(totalWalletBalance)}")
@@ -350,6 +365,8 @@ class AiInsightsViewModel(
                         appendLine("- Kategori Pengeluaran Terbanyak: $topCategories")
                     }
                     appendLine("- Transaksi Terkini: $recentTxSummary")
+                    appendLine("- Kurs Valuta Asing Terkini (Live REST API open.er-api.com): $currencyExchangeContext")
+                    appendLine("  (Gunakan data kurs ini jika pengguna bertanya tentang konversi nilai uang kas ke USD/valas lain, belanja barang impor, atau kebutuhan konversi mata uang).")
                 }
 
                 val res = aiService.askFinancialAssistant(

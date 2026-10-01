@@ -12,6 +12,11 @@ class UserPreferences(private val context: Context) {
         val KEY_USER_NAME = stringPreferencesKey("user_name")
         val KEY_ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val KEY_TUTORIAL_COMPLETED = booleanPreferencesKey("tutorial_completed")
+        val KEY_SELECTED_CURRENCY = stringPreferencesKey("selected_currency")
+    }
+
+    val selectedCurrencyFlow: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[KEY_SELECTED_CURRENCY] ?: "IDR"
     }
 
     val userNameFlow: Flow<String> = context.dataStore.data.map { preferences ->
@@ -24,6 +29,12 @@ class UserPreferences(private val context: Context) {
 
     val isTutorialCompletedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[KEY_TUTORIAL_COMPLETED] ?: false
+    }
+
+    suspend fun saveSelectedCurrency(currencyCode: String) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_SELECTED_CURRENCY] = currencyCode.uppercase().trim()
+        }
     }
 
     suspend fun saveUserName(name: String) {
