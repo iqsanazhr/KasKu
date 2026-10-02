@@ -14,6 +14,7 @@
     <img src="https://img.shields.io/badge/Database-Room_SQLite-00599C?style=for-the-badge&logo=sqlite&logoColor=white" alt="Room"/>
     <img src="https://img.shields.io/badge/AI_Engine-Google_Gemini_%26_LM_Studio-EA4335?style=for-the-badge&logo=google&logoColor=white" alt="AI"/>
     <img src="https://img.shields.io/badge/Architecture-MVVM_%2B_Clean-FF6F00?style=for-the-badge&logo=android&logoColor=white" alt="Architecture"/>
+    <img src="https://img.shields.io/badge/Kelas-Kelas_A_2026-EB5B45?style=for-the-badge" alt="Kelas A"/>
     <img src="https://img.shields.io/badge/License-MIT-00C853?style=for-the-badge" alt="License"/>
   </p>
 
@@ -21,28 +22,134 @@
 
 ---
 
-## 📖 Tentang KasKu
+## 🍱 KasKu Bento Grid System & Brand Manual
 
-**KasKu** adalah aplikasi pencatatan keuangan pribadi modern untuk perangkat Android yang dirancang dengan perpaduan estetika perbankan digital ala *Monzo* dan kehalusan antarmuka *Apple Design*. KasKu tidak hanya mencatat uang masuk dan keluar secara konvensional, melainkan menyematkan kecerdasan buatan (*Artificial Intelligence*) untuk mengenali struk belanja secara otomatis (*AI Vision OCR*) dan menjadi asisten penasihat keuangan pribadi (*Personal Financial Advisor*).
-
-Aplikasi ini mengedepankan prinsip **Offline-First & Privacy-Focused**, di mana seluruh data transaksi finansial tersimpan aman di database lokal perangkat Anda.
+<table>
+  <tr>
+    <td colspan="2" align="center" style="background: #F8F9FA; padding: 20px;">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/brand_manual_preview.png" alt="KasKu Brand Manual Presentation Preview" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.12);"/>
+      </a>
+      <br/><br/>
+      <h3>🎨 KasKu Corporate Brand Manual & Interactive PPT Deck (v1.1.0)</h3>
+      <p align="center">
+        Dokumen panduan identitas visual resmi 2-page landscape spread yang memuat filosofi logo $K^2$, palet warna <i>Terracotta Crimson</i> (<code>#EB5B45</code>), tipografi <i>Plus Jakarta Sans</i>, arsitektur antarmuka, hingga showcase produksi.
+      </p>
+      <p align="center">
+        <a href="docs/KasKu_Brand_Manual_Viewer.html">
+          <img src="https://img.shields.io/badge/🖥️_Interactive_Web_Viewer-Full_Screen_(PPT_Mode)-EB5B45?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Interactive Web Viewer"/>
+        </a>
+        &nbsp;
+        <a href="docs/KasKu_Brand_Manual_Landscape.pdf">
+          <img src="https://img.shields.io/badge/📥_Download_Official_PDF-Landscape_2%3A1_(2.25_MB)-1F2937?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Download PDF"/>
+        </a>
+        &nbsp;
+        <a href="docs/BRANDING_COMPANY_BOOK.md">
+          <img src="https://img.shields.io/badge/📖_Brand_Guidelines-Markdown_Spec-4B5563?style=for-the-badge&logo=markdown&logoColor=white" alt="Markdown Spec"/>
+        </a>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h4>🏷️ Identitas & Nilai Inti ($K^2$)</h4>
+      <ul>
+        <li><strong>Pertumbuhan Kuadratik ($K^2$)</strong>: Huruf "K" berpangkat dua merepresentasikan lompatan eksponensial dalam keteraturan finansial pribadi.</li>
+        <li><strong>Terracotta Crimson (<code>#EB5B45</code>)</strong>: Menghilangkan kesan kaku perbankan tradisional dengan warna hangat, dinamis, dan energik.</li>
+        <li><strong>Human-Centered Design</strong>: Ergonomi satu tangan dengan kurva membulat dan dynamic floating navigation.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h4>🧠 Dual Multimodal AI Engine</h4>
+      <ul>
+        <li><strong>CameraX Smart Vision OCR</strong>: Deteksi struk instan berbasis Google Gemini 2.5/3.6/3.8 Flash untuk parsing otomatis nama merchant, tanggal, rincian barang, dan total nominal.</li>
+        <li><strong>Offline Local LLM (LM Studio)</strong>: Pilihan privat untuk menjalankan model bahasa lokal via endpoint HTTP lokal tanpa transmisi data ke cloud luar.</li>
+        <li><strong>Grounding Valas Real-Time</strong>: Asisten AI terhubung ke live endpoint REST API kurs 9 valuta asing.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h4>🛡️ 100% Offline-First Sovereignty</h4>
+      <ul>
+        <li><strong>Zero Network Dependency</strong>: Seluruh transaksi, dompet, dan histori tersimpan di database lokal Room SQLite.</li>
+        <li><strong>0ms Query Latency</strong>: Akses instan tanpa jeda loading server cloud.</li>
+        <li><strong>Kedaulatan Data Privasi</strong>: Riwayat belanja Anda sepenuhnya milik Anda sendiri.</li>
+      </ul>
+    </td>
+    <td width="50%" valign="top">
+      <h4>💱 Multi-Currency & Live REST API</h4>
+      <ul>
+        <li><strong>9 Mata Uang Global</strong>: IDR (Rp), USD ($), EUR (€), SGD (S$), MYR (RM), JPY (¥), GBP (£), AUD (A$), SAR (SR).</li>
+        <li><strong>Live Currency Converter</strong>: Terintegrasi dengan endpoint REST API <code>open.er-api.com</code> berarsitektur <code>UiState</code> reaktif.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ---
 
-## 📸 Tangkapan Layar & Antarmuka Aplikasi
+## 📱 Production App Showcase (Mockup Smartphone Berbingkai)
+
+Empat layar antarmuka kunci KasKu dibungkus dengan desain bingkai smartphone modern (Dynamic Island & Bezel Titanium) beresolusi tinggi:
+
+<table>
+  <tr>
+    <td width="25%" align="center" valign="top">
+      <img src="docs/mockups/mockup_dashboard.png" alt="KasKu Dashboard" width="100%"/>
+      <br/>
+      <strong>1. Beranda & Arus Kas</strong>
+      <br/>
+      <small>Kartu Debit Virtual Fintech Modern, Saldo Kumulatif & Grafik 7 Hari</small>
+    </td>
+    <td width="25%" align="center" valign="top">
+      <img src="docs/mockups/mockup_riwayat.png" alt="KasKu Riwayat Transaksi" width="100%"/>
+      <br/>
+      <strong>2. Riwayat Transaksi</strong>
+      <br/>
+      <small>Agregasi Mutasi (+/-), Filter Tab Kategori & Pencarian Merchant Cerdas</small>
+    </td>
+    <td width="25%" align="center" valign="top">
+      <img src="docs/mockups/mockup_scan.png" alt="KasKu Receipt Scanner" width="100%"/>
+      <br/>
+      <strong>3. Pindai Struk AI Vision</strong>
+      <br/>
+      <small>Jendela Bidik CameraX, Kontrol Flash, & Ekstraksi Multimodal OCR</small>
+    </td>
+    <td width="25%" align="center" valign="top">
+      <img src="docs/mockups/mockup_chat_ai.png" alt="KasKu AI Chat" width="100%"/>
+      <br/>
+      <strong>4. KasKu AI Assistant</strong>
+      <br/>
+      <small>Konsultan Finansial Adaptif, Grounding Kurs Live & Riwayat Sesi</small>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 📖 Tentang KasKu
+
+**KasKu** adalah aplikasi pencatatan keuangan pribadi cerdas untuk perangkat Android yang dirancang dengan perpaduan estetika perbankan digital ala *fintech modern* dan kehalusan antarmuka *prinsip desain humanis ergonomis*. KasKu tidak hanya mencatat uang masuk dan keluar secara konvensional, melainkan menyematkan kecerdasan buatan (*Artificial Intelligence*) untuk mengenali struk belanja secara otomatis (*AI Vision OCR*) dan bertindak sebagai asisten penasihat keuangan pribadi (*Personal Financial Advisor*).
+
+Aplikasi ini mengedepankan prinsip **Offline-First & Privacy-Focused**, di mana seluruh data transaksi finansial tersimpan aman di database lokal perangkat Anda tanpa ketergantungan cloud wajib.
+
+---
+
+## 📸 Rincian Seluruh Layar & Fitur Aplikasi
 
 Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalitas utama pada tiap halamannya:
 
 ### 1. 🚀 Splash Screen & Loading Brand
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/splash_loading.png" alt="KasKu Splash Screen" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_splash.png" alt="KasKu Splash Screen" width="260"/>
     </td>
     <td>
       <h4>Fitur & Fungsionalitas:</h4>
       <ul>
-        <li><strong>Branding Elegan</strong>: Menampilkan ikon KasKu K2 bergaya neogrotesk minimalis dengan latar belakang bernuansa <i>Ceramic Dark</i>.</li>
+        <li><strong>Branding Elegan</strong>: Menampilkan logo KasKu $K^2$ berlatar belakang bernuansa <i>Ceramic Dark</i>.</li>
         <li><strong>Transisi Halus</strong>: Dilengkapi animasi fade-in (300ms) dan fade-out (450ms) yang mulus saat inisialisasi aplikasi.</li>
         <li><strong>Inisialisasi Data Lokal</strong>: Menjalankan sinkronisasi awal Room Database dan pengecekan preferensi onboarding di latar belakang.</li>
       </ul>
@@ -53,15 +160,15 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
 ### 2. 🏠 Beranda & Arus Kas Real-Time (*Dashboard*)
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/01_dashboard.png" alt="KasKu Dashboard Screen" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_dashboard.png" alt="KasKu Dashboard Screen" width="260"/>
     </td>
     <td>
       <h4>Fitur & Fungsionalitas:</h4>
       <ul>
         <li><strong>Header Personal</strong>: Sapaan waktu dinamis (<i>"Selamat Pagi, iqsan"</i>) lengkap dengan avatar profil, tombol pencarian transaksi, dan tombol cepat input mutasi (<code>+</code>).</li>
         <li><strong>Pintasan KasKu AI (<code>✦</code>)</strong>: Akses instan satu ketukan ke asisten cerdas KasKu AI di kanan atas layar.</li>
-        <li><strong>Kartu Dompet Virtual Interaktif</strong>: Visualisasi kartu debit ala Monzo berwarna Terracotta dengan saldo aktif, gesture geser untuk beralih antar rekening (Uang Tunai, Bank, E-Wallet), serta sakelar <i>Kumulatif Total Saldo</i>.</li>
+        <li><strong>Kartu Dompet Virtual Interaktif</strong>: Visualisasi kartu debit fintech modern berwarna Terracotta dengan saldo aktif, gesture geser untuk beralih antar rekening (Uang Tunai, Bank, E-Wallet), serta sakelar <i>Kumulatif Total Saldo</i>.</li>
         <li><strong>Aksi Cepat</strong>: Tombol <i>Catat Kas</i> dan <i>Kelola Dompet</i> untuk transaksi harian tanpa hambatan.</li>
         <li><strong>Grafik Arus Kas 7 Hari</strong>: Bar chart interaktif perbandingan pemasukan vs pengeluaran harian dengan indikator status <i>Surplus / Defisit</i>.</li>
         <li><strong>Dynamic Capsule Bottom Bar</strong>: Bilah navigasi bawah mengambang (*floating capsule*) dengan sudut membulat, hairline border 0.5dp, bayangan lembut, dan active pill indicator.</li>
@@ -73,8 +180,8 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
 ### 3. 📑 Riwayat & Pencarian Transaksi
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/02_riwayat.png" alt="KasKu Riwayat Transaksi" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_riwayat.png" alt="KasKu Riwayat Transaksi" width="260"/>
     </td>
     <td>
       <h4>Fitur & Fungsionalitas:</h4>
@@ -92,8 +199,8 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
 ### 4. 🧾 Pindai Struk AI (*Smart Vision OCR*)
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/03_scan.png" alt="KasKu Receipt Scanner" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_scan.png" alt="KasKu Receipt Scanner" width="260"/>
     </td>
     <td>
       <h4>Fitur & Fungsionalitas:</h4>
@@ -110,8 +217,8 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
 ### 5. 📈 Tren & Analitik Arus Kas
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/04_tren.png" alt="KasKu Tren & Analitik" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_tren.png" alt="KasKu Tren & Analitik" width="260"/>
     </td>
     <td>
       <h4>Fitur & Fungsionalitas:</h4>
@@ -128,12 +235,12 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
 ### 6. ⚙️ Pengaturan, Multi-Wallet & Konfigurasi AI
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/05_setelan_top.png" alt="KasKu Settings Top" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_setelan_top.png" alt="KasKu Settings Top" width="260"/>
       <br/><em>(Bagian Atas: Profil, Dompet & AI)</em>
     </td>
-    <td width="360" align="center">
-      <img src="docs/05_setelan_bottom.png" alt="KasKu Settings Bottom" width="280"/>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_setelan_bottom.png" alt="KasKu Settings Bottom" width="260"/>
       <br/><em>(Bagian Bawah: Uji AI & Panduan)</em>
     </td>
   </tr>
@@ -163,17 +270,10 @@ Berikut adalah dokumentasi visual antarmuka pengguna KasKu beserta fungsionalita
 ### 7. 🤖 KasKu AI Assistant & Manajemen Sesi Obrolan
 <table>
   <tr>
-    <td width="360" align="center">
-      <img src="docs/06_chat_ai.png" alt="KasKu AI Chat" width="280"/>
-      <br/><em>(Antarmuka Chat AI)</em>
+    <td width="320" align="center">
+      <img src="docs/mockups/mockup_chat_ai.png" alt="KasKu AI Chat" width="260"/>
     </td>
-    <td width="360" align="center">
-      <img src="docs/07_chat_ai_drawer.png" alt="KasKu AI Drawer" width="280"/>
-      <br/><em>(Drawer Riwayat Sesi)</em>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2">
+    <td>
       <h4>Fitur & Fungsionalitas:</h4>
       <ul>
         <li><strong>Asisten Keuangan Generatif</strong>: Berdialog interaktif seputar strategi anggaran, evaluasi pengeluaran bulanan, dan tips finansial berbasis data riil pengguna.</li>
@@ -216,18 +316,22 @@ D:\kasku\
 │   │   │   │   ├── 📂 domain/
 │   │   │   │   │   └── 📂 model/          # Business logic data models & Category enums
 │   │   │   │   ├── 📂 ui/
-│   │   │   │   │   ├── 📂 components/     # Reusable UI widgets, Cards, Dialogs, & Apple Sheets
-│   │   │   │   │   ├── 📂 navigation/     # NavHost, Screen routes, & TelegramLiquidGlassBottomBar
+│   │   │   │   │   ├── 📂 components/     # Reusable UI widgets, Cards, Dialogs, & Modern Bottom Sheets
+│   │   │   │   │   ├── 📂 navigation/     # NavHost, Screen routes, & FloatingLiquidBottomBar
 │   │   │   │   │   ├── 📂 screens/        # Dashboard, Transactions, Scanner, Chat, Trends, Settings
 │   │   │   │   │   └── 📂 theme/          # Color, Type, Shape, & Theme styling
 │   │   │   │   └── 📄 MainActivity.kt     # Single Activity orchestrator & root Compose Host
 │   │   │   └── 📂 res/                    # Vector Drawables, Mipmap Icons, Layouts, AndroidManifest
 │   │   └── 📂 test/                       # Unit & Instrumental Testing
 │   └── 📄 build.gradle.kts                # Modul app dependencies (Compose, Room, CameraX, KSP)
-├── 📂 docs/                               # 📸 Aset tangkapan layar antarmuka aplikasi
+├── 📂 docs/                               # 📸 Aset dokumentasi, Brand Book PDF, & Mockups
+│   ├── 📂 mockups/                        # 📱 Screenshot berbingkai smartphone (Dynamic Island & Titanium)
+│   ├── 📄 KasKu_Brand_Manual_Viewer.html  # 🖥️ Interactive Web Viewer & Full Screen PPT Presenter
+│   ├── 📄 KasKu_Brand_Manual_Landscape.pdf# 📥 Dokumen resmi PDF 2:1 Landscape (Print-ready)
+│   └── 📄 BRANDING_COMPANY_BOOK.md        # 📘 Panduan identitas visual & filosofi merek
 ├── 📄 build.gradle.kts                    # Root build configuration
 ├── 📄 settings.gradle.kts                 # Repositori & plugin Gradle declaration
-└── 📄 README.md                           # Dokumentasi utama proyek
+└── 📄 README.md                           # Dokumentasi utama repositori GitHub
 ```
 
 ---
@@ -239,7 +343,7 @@ D:\kasku\
 | **Bahasa Utama** | **Kotlin 2.0+** | Bahasa pemrograman modern dengan Coroutines & Flow |
 | **Antarmuka (UI)** | **Jetpack Compose + Material 3** | Pembangunan antarmuka deklaratif dengan token Material Design 3 |
 | **Navigasi** | **Compose Navigation** | Pengaturan alur antar layar dengan single-activity architecture |
-| **Penyimpanan Lokal** | **Room Database (SQLite)** | Penyimpanan mutasi, histori transaksi, dompet, dan riwayat chat |
+| **Penyimpanan Lokal** | **Room Database (SQLite)** | Penyimpanan mutasi, histori transaksi, dompet, dan riwayat chat (100% Offline-First) |
 | **Preferensi** | **Jetpack DataStore** | Penyimpanan kunci API dan pengaturan onboarding secara aman |
 | **Kamera & Gambar** | **CameraX + Coil 3** | Antarmuka kamera OCR struk dan perenderan gambar asinkron |
 | **Jaringan & REST API** | **Retrofit 2 + OkHttp 3 + Kotlinx Serialization** | Klien REST API kurs valas (Retrofit 2) & HTTP client AI Gemini/LM Studio (OkHttp 3) |
@@ -283,13 +387,13 @@ Untuk mengaktifkan fitur cerdas pemindai struk dan chatbot penasihat finansial:
 
 ---
 
-## 👥 Anggota Kelompok 2 (Kelas B - Pemrograman Mobile)
+## 👥 Anggota Kelompok 2 (Kelas A - Pemrograman Mobile 2026)
 
 Berikut adalah susunan anggota tim pengembang aplikasi KasKu yang diurutkan berdasarkan Nomor Induk Mahasiswa (NIM):
 
 | No | Foto / Avatar | Nama Mahasiswa | NIM | Peran & Kontribusi Utama |
 |:---:|:---:|:---|:---:|:---|
-| 1 | 👨‍💻 | **Iqsan Azhar Nuryadi** | `H1D024009` | **Lead Architect & UI/UX Specialist**: Perancangan konsep UI/UX Monzo & Apple HIG, arsitektur tema, reusable components (`AppleComponents.kt`), dan sistem multi-currency dinamis. |
+| 1 | 👨‍💻 | **Iqsan Azhar Nuryadi** | `H1D024009` | **Lead Architect & UI/UX Specialist**: Perancangan konsep UI/UX Fintech Modern & Human-Centered Design, arsitektur tema, reusable components, dan sistem multi-currency dinamis. |
 | 2 | 📊 | **Surung Nicholas Manalu** | `H1D024017` | **Core Feature & State Management**: Implementasi `DashboardScreen`, stack kartu virtual swipeable, formulir transaksi (`AddTransactionSheet`), dan alur state UDF. |
 | 3 | 🗄️ | **Izaz Falih** | `H1D024034` | **Database & Repository Architect**: Perancangan skema relasional Room SQLite (5 entitas 3NF), DAO reaktif, enkripsi preferensi DataStore, dan repository pattern. |
 | 4 | 🤖 | **Najmi Zahrian** | `H1D024038` | **AI Vision & Network Engineer**: Integrasi kamera CameraX, Gemini Multimodal Vision OCR struk belanja, Retrofit 2 REST API kurs live, dan discovery model dinamis. |
@@ -311,18 +415,12 @@ Berikut adalah susunan anggota tim pengembang aplikasi KasKu yang diurutkan berd
   - Tombol sinkronisasi model inline yang ringkas di samping kolom input API Key.
   - Otomatis mengecek izin koneksi dan mengambil daftar model resmi yang didukung akun Google AI Studio pengguna (hingga `Gemini 3.8 Flash`, `Gemini 3.6 Flash`, `Gemini 2.5 Flash`, serta input manual kustom).
 - 🧭 **Panduan Interaktif Menyeluruh (*Interactive Guided Tour*)**:
-  - Perluasan fitur spotlight walkthrough tutorial (`FeatureTutorialOverlay`) ke 5 layar utama aplikasi:
-    1. **Beranda**: Tumpukan kartu saldo, aksi catat cepat, grafik arus kas 7 hari, dan akses asisten AI.
-    2. **Riwayat Transaksi**: Ringkasan akumulasi mutasi, filter & pencarian cerdas, rincian nota, dan FAB catat instan.
-    3. **Tren & Analitik**: Grafik arus kas mingguan/bulanan, distribusi pengeluaran per kategori, dan rincian surplus/defisit.
-    4. **Pengaturan**: Profil personal, selector mata uang & kurs valas, manajemen dompet, dan konfigurasi engine AI.
-    5. **KasKu AI Chat**: Sesi riwayat obrolan, asisten finansial dengan grounding kurs valas, quick prompts, dan pesan bebas.
-  - Otomatis muncul saat pengguna pertama kali memasuki ruang AI Chat, serta tombol *"Reset Panduan Interaktif"* di Pengaturan untuk memutar ulang panduan kapan saja.
+  - Perluasan fitur spotlight walkthrough tutorial (`FeatureTutorialOverlay`) ke 5 layar utama aplikasi: Beranda, Riwayat Transaksi, Tren & Analitik, Pengaturan, dan KasKu AI Chat.
 
 ### [v1.0.0] - 2026-10-01 (Gold Master Release)
 - 📱 Rilis publik perdana KasKu Smart Cash Flow & Expense Tracker.
-- 🎨 Jetpack Compose UI Material 3 terinspirasi estetika Monzo Digital Bank & Apple HIG.
-- 💾 Arsitektur data lokal reaktif Room SQLite dengan 5 entitas terelasi 3NF.
+- 🎨 Jetpack Compose UI Material 3 berlandaskan prinsip Fintech Modern & Human-Centered Design Guidelines.
+- 💾 Arsitektur data lokal reaktif Room SQLite dengan 5 entitas terelasi 3NF (100% Offline-First).
 - 🧾 CameraX + Gemini Vision OCR untuk pemindaian struk belanja otomatis.
 - 💬 Chatbot Konsultan Finansial berbasis LLM dengan manajemen sesi percakapan.
 

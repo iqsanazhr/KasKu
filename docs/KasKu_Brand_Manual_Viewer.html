@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KasKu — Company Brand Manual (Perfect Two-Page Spread)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-primary: #EB5B45;
+      --brand-dark: #C43D29;
+      --brand-deep: #8E2515;
+      --brand-tint: #FFF4F1;
+      --brand-coral: #FF7B66;
+      --navy-dark: #121316;
+      --navy-card: #1C1E24;
+      --gray-bg: #EAEFF4;
+      --gray-light: #F8F9FA;
+      --gray-border: #E5E7EB;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--gray-bg);
+      color: var(--text-main);
+      padding: 95px 20px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 60px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Floating Header Terpadu di Tengah: KASKU BRAND MANUAL + Full Screen Icon Only */
+    .floating-header {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: rgba(18, 19, 22, 0.92);
+      backdrop-filter: blur(14px);
+      padding: 6px 8px 6px 8px;
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-badge {
+      background: var(--brand-primary);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .header-fs-icon-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 0;
+    }
+    .header-fs-icon-btn:hover {
+      background: var(--brand-primary);
+      border-color: var(--brand-primary);
+      transform: scale(1.1);
+    }
+
+    /* Two-Page Spread Container (Presisi 16:9 / Landscape Booklet) */
+    .spread-container {
+      width: 1240px;
+      height: 620px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .page {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      padding: 44px 50px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-divider {
+      border-right: 1px solid rgba(0,0,0,0.06);
+    }
+
+    /* ====================================================
+       PHONE MOCKUP FRAME (PROPORSIONAL, TIDAK TERPOTONG)
+    ==================================================== */
+    .phone-mockup-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+    }
+    .phone-mockup {
+      width: 235px;
+      height: 485px;
+      background: #0A0A0C;
+      border-radius: 36px;
+      padding: 9px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255,255,255,0.1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .phone-notch {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 16px;
+      background: #000;
+      border-radius: 10px;
+      z-index: 10;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #FFF;
+      position: relative;
+    }
+    .phone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    /* Small Mockup Variant */
+    .phone-mockup-sm {
+      width: 195px;
+      height: 405px;
+      border-radius: 30px;
+      padding: 8px;
+    }
+    .phone-mockup-sm .phone-screen {
+      border-radius: 22px;
+    }
+
+    /* ====================================================
+       SPREAD 1: COVER & BACK COVER
+    ==================================================== */
+    .spread-1-left {
+      background: #FFFFFF;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 110px;
+    }
+    .spread-1-left-shape {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 120px;
+      background: linear-gradient(145deg, var(--brand-dark), var(--brand-primary));
+      clip-path: polygon(0 0, 100% 0, 50% 100%, 0% 100%);
+    }
+    .spread-1-left-subshape {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 160px;
+      background: rgba(235, 91, 69, 0.12);
+      clip-path: polygon(0 0, 100% 0, 35% 100%, 0% 100%);
+    }
+
+    .spread-1-right {
+      background: #FFFFFF;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      padding: 60px 60px 50px;
+    }
+    .cover-curve-swoosh {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 68%;
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 65%, var(--brand-coral) 100%);
+      clip-path: ellipse(95% 72% at 5% 18%);
+      z-index: 1;
+    }
+    .cover-brand-header {
+      position: absolute;
+      top: 45px;
+      left: 55px;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .cover-brand-header img {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+    .cover-brand-header span {
+      color: white;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .cover-content-box {
+      position: relative;
+      z-index: 5;
+      text-align: right;
+    }
+    .cover-h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: var(--brand-primary);
+      line-height: 1.05;
+      margin-bottom: 6px;
+      letter-spacing: -1px;
+    }
+    .cover-h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .cover-sub {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .cover-meta {
+      margin-top: 32px;
+      font-size: 0.75rem;
+      color: #9CA3AF;
+    }
+
+    /* ====================================================
+       SPREAD 2: CONTENTS & ABOUT US (DIPERBAIKI 100%)
+    ==================================================== */
+    .spread-2-left {
+      background: linear-gradient(145deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
+      color: white;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 50px 60px;
+    }
+    .watermark-kasku {
+      position: absolute;
+      right: -30px;
+      bottom: -30px;
+      width: 280px;
+      height: 280px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    .contents-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .contents-divider {
+      width: 44px;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+      margin-bottom: 32px;
+    }
+    .contents-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .contents-menu li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      opacity: 0.95;
+    }
+    .contents-menu li span.num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* About Us (Right) dengan Layout 2 Kolom Bersih */
+    .spread-2-right {
+      background: #FFFFFF;
+      padding: 44px 48px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 32px;
+      align-items: center;
+      position: relative;
+    }
+    .about-text-content h3 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .about-text-content p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .about-curve-footer {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 240px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-coral));
+      clip-path: ellipse(90% 100% at 90% 100%);
+    }
+
+    /* ====================================================
+       SPREAD 3: BRAND IDENTITY (DIPERBAIKI)
+    ==================================================== */
+    .spread-3-left {
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+    }
+    .circle-card-showcase {
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: var(--brand-tint);
+      border: 8px solid white;
+      box-shadow: 0 16px 40px rgba(235, 91, 69, 0.16);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 36px;
+      position: relative;
+    }
+    .circle-card-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      color: var(--brand-primary);
+    }
+    .circle-card-showcase h4 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+      margin-bottom: 8px;
+    }
+    .circle-card-showcase p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .spread-3-right {
+      background: #FFFFFF;
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .identity-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--brand-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .identity-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .identity-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .pillar-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .pillar-bullet {
+      width: 38px;
+      height: 38px;
+      background: var(--brand-tint);
+      color: var(--brand-primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .pillar-content h5 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 2px;
+    }
+    .pillar-content p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ====================================================
+       SPREAD 4: LOGO GUIDELINES & BLUEPRINT
+    ==================================================== */
+    .spread-4-left {
+      background: #FFFFFF;
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .rules-box {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .dont-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .dont-item {
+      border: 1px dashed #EF4444;
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+      background: #FEF2F2;
+      position: relative;
+    }
+    .dont-item .cross {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      color: #EF4444;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+    .dont-item .preview-txt {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .dont-item .label {
+      font-size: 0.7rem;
+      color: #991B1B;
+      font-weight: 600;
+    }
+
+    .spread-4-right {
+      background: #F9FAFB;
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .blueprint-box {
+      border: 2px dashed rgba(235, 91, 69, 0.45);
+      background: white;
+      padding: 36px 54px;
+      border-radius: 16px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .bp-indicator-top {
+      position: absolute;
+      top: -18px;
+      left: 30px;
+      right: 30px;
+      border-top: 1px solid var(--brand-primary);
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--brand-primary);
+      font-weight: 700;
+      padding-top: 2px;
+    }
+    .bp-indicator-side {
+      position: absolute;
+      left: -18px;
+      top: 20px;
+      bottom: 20px;
+      border-left: 1px solid var(--brand-primary);
+      writing-mode: vertical-lr;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--brand-primary);
+      font-weight: 700;
+      text-align: center;
+      padding-left: 2px;
+    }
+
+    /* ====================================================
+       SPREAD 5: COLOR PALETTE & TYPOGRAPHY
+    ==================================================== */
+    .spread-5-left {
+      background: #FFFFFF;
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .palette-group-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 14px 0 8px;
+    }
+    .swatches-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .swatch-card-mini {
+      background: #F9FAFB;
+      border: 1px solid var(--gray-border);
+      border-radius: 10px;
+      padding: 8px;
+    }
+    .swatch-color-rect {
+      height: 48px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .swatch-meta-name {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .swatch-meta-hex {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .spread-5-right {
+      background: #FAFAFB;
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .typo-sample-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 18px 0 20px;
+    }
+    .typo-spec-box {
+      background: white;
+      border: 1px solid var(--gray-border);
+      border-radius: 10px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+    .typo-spec-box .sample-h {
+      font-size: 1.15rem;
+      color: var(--brand-primary);
+      margin-bottom: 4px;
+    }
+
+    /* ====================================================
+       SPREAD 6: BRAND AMBITION & MISSION (DIPERBAIKI)
+    ==================================================== */
+    .spread-6-left {
+      background: #FFFFFF;
+      padding: 44px 48px;
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+    .spread-6-right {
+      background: #F9FAFB;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .mission-center-diagram {
+      position: relative;
+      width: 440px;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .center-mission-badge {
+      width: 106px;
+      height: 106px;
+      border-radius: 50%;
+      background: white;
+      border: 6px solid var(--brand-tint);
+      box-shadow: 0 12px 30px rgba(235, 91, 69, 0.22);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 5;
+    }
+    .mission-node {
+      position: absolute;
+      background: white;
+      border: 1px solid var(--gray-border);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      width: 195px;
+    }
+    .node-1 { top: 15px; left: 10px; }
+    .node-2 { top: 15px; right: 10px; }
+    .node-3 { bottom: 15px; left: 10px; }
+    .node-4 { bottom: 15px; right: 10px; }
+    .node-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    /* ====================================================
+       SPREAD 7 (BONUS): FULL APP SCREENS SHOWCASE
+       Menampilkan 4 Mockup Layar Sekaligus Secara Sempurna
+    ==================================================== */
+    .spread-showcase {
+      grid-template-columns: 1fr;
+      padding: 40px 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .showcase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--gray-border);
+      padding-bottom: 14px;
+    }
+    .showcase-phones-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+      height: 440px;
+    }
+    .showcase-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .showcase-caption {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      text-align: center;
+    }
+    .showcase-caption span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* ====================================================
+       PERFECT PDF & PRINT STYLES (TINGGI SAMA PERSIS DENGAN VIEW WEB)
+    ==================================================== */
+    @page {
+      size: 1240px 620px;
+      margin: 0;
+    }
+
+    @media print {
+      *, *:before, *:after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      html, body {
+        width: 1240px !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #FFFFFF !important;
+      }
+
+      .floating-header,
+      .toolbar {
+        display: none !important;
+      }
+
+      .spread-container {
+        width: 1240px !important;
+        height: 620px !important;
+        min-height: 620px !important;
+        max-height: 620px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .page {
+        height: 620px !important;
+        max-height: 620px !important;
+        padding: 44px 50px !important;
+        overflow: hidden !important;
+      }
+
+      .spread-showcase {
+        height: 620px !important;
+        max-height: 620px !important;
+        padding: 40px 50px !important;
+      }
+
+      .showcase-phones-row {
+        height: 440px !important;
+      }
+
+      .phone-mockup {
+        width: 235px !important;
+        height: 485px !important;
+      }
+
+      .phone-mockup-sm {
+        width: 195px !important;
+        height: 405px !important;
+      }
+    }
+
+    /* ====================================================
+       PPT FULLSCREEN PRESENTATION MODE
+    ==================================================== */
+    body.ppt-active {
+      background: #08090B !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      height: 100vh !important;
+      width: 100vw !important;
+      position: relative !important;
+    }
+    body.ppt-active .floating-header,
+    body.ppt-active .toolbar {
+      display: none !important;
+    }
+    body.ppt-active .spread-container {
+      display: none !important;
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      margin: 0 !important;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.8) !important;
+      transform-origin: center center;
+    }
+    body.ppt-active .spread-container.slide-active {
+      display: grid !important;
+    }
+
+    /* Keyframes Animasi Kemunculan Elemen Slide */
+    @keyframes pptFadeDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pptFadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pptScalePop {
+      0% { opacity: 0; transform: scale(0.88) translateY(20px); }
+      70% { transform: scale(1.02) translateY(0); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes pptSlideLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes pptSlideRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Animasi Staggered Kemunculan Elemen Tiap Slide */
+    body.ppt-active .slide-active .page-header-line,
+    body.ppt-active .slide-active .cover-brand-header,
+    body.ppt-active .slide-active .showcase-header {
+      animation: pptFadeDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) both 0.05s;
+    }
+    body.ppt-active .slide-active .cover-content-box h1,
+    body.ppt-active .slide-active .cover-content-box h2,
+    body.ppt-active .slide-active .about-text-content h3,
+    body.ppt-active .slide-active .identity-text h3 {
+      animation: pptFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both 0.12s;
+    }
+    body.ppt-active .slide-active .cover-sub,
+    body.ppt-active .slide-active .cover-meta,
+    body.ppt-active .slide-active .about-text-content p,
+    body.ppt-active .slide-active .identity-text p {
+      animation: pptFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both 0.2s;
+    }
+
+    /* Mockup HP & Visual Hero Containers */
+    body.ppt-active .slide-active .phone-mockup-wrapper,
+    body.ppt-active .slide-active .circle-card-showcase,
+    body.ppt-active .slide-active .blueprint-box,
+    body.ppt-active .slide-active .mission-center-diagram {
+      animation: pptScalePop 0.65s cubic-bezier(0.16, 1, 0.3, 1) both 0.22s;
+    }
+
+    /* Spread 7: Cascading 4 Mockup HP (Muncul Bergantian Berurutan) */
+    body.ppt-active .slide-active .showcase-item:nth-child(1) {
+      animation: pptScalePop 0.6s cubic-bezier(0.16, 1, 0.3, 1) both 0.12s;
+    }
+    body.ppt-active .slide-active .showcase-item:nth-child(2) {
+      animation: pptScalePop 0.6s cubic-bezier(0.16, 1, 0.3, 1) both 0.24s;
+    }
+    body.ppt-active .slide-active .showcase-item:nth-child(3) {
+      animation: pptScalePop 0.6s cubic-bezier(0.16, 1, 0.3, 1) both 0.36s;
+    }
+    body.ppt-active .slide-active .showcase-item:nth-child(4) {
+      animation: pptScalePop 0.6s cubic-bezier(0.16, 1, 0.3, 1) both 0.48s;
+    }
+
+    /* Spread 2: Daftar Isi Animasi Meluncur */
+    body.ppt-active .slide-active .contents-menu li:nth-child(1) { animation: pptSlideLeft 0.45s both 0.12s; }
+    body.ppt-active .slide-active .contents-menu li:nth-child(2) { animation: pptSlideLeft 0.45s both 0.18s; }
+    body.ppt-active .slide-active .contents-menu li:nth-child(3) { animation: pptSlideLeft 0.45s both 0.24s; }
+    body.ppt-active .slide-active .contents-menu li:nth-child(4) { animation: pptSlideLeft 0.45s both 0.30s; }
+    body.ppt-active .slide-active .contents-menu li:nth-child(5) { animation: pptSlideLeft 0.45s both 0.36s; }
+    body.ppt-active .slide-active .contents-menu li:nth-child(6) { animation: pptSlideLeft 0.45s both 0.42s; }
+
+    /* Spread 3: Value Pillars */
+    body.ppt-active .slide-active .value-item:nth-child(1) { animation: pptSlideRight 0.5s both 0.16s; }
+    body.ppt-active .slide-active .value-item:nth-child(2) { animation: pptSlideRight 0.5s both 0.26s; }
+    body.ppt-active .slide-active .value-item:nth-child(3) { animation: pptSlideRight 0.5s both 0.36s; }
+
+    /* Spread 4: Palette & Do/Don't */
+    body.ppt-active .slide-active .color-chip { animation: pptScalePop 0.5s both 0.22s; }
+    body.ppt-active .slide-active .dont-item:nth-child(1) { animation: pptFadeUp 0.48s both 0.28s; }
+    body.ppt-active .slide-active .dont-item:nth-child(2) { animation: pptFadeUp 0.48s both 0.36s; }
+    body.ppt-active .slide-active .dont-item:nth-child(3) { animation: pptFadeUp 0.48s both 0.44s; }
+
+    /* Spread 5: Font Spec & Scale */
+    body.ppt-active .slide-active .font-spec-card { animation: pptScalePop 0.55s both 0.2s; }
+    body.ppt-active .slide-active .scale-row:nth-child(1) { animation: pptSlideRight 0.45s both 0.14s; }
+    body.ppt-active .slide-active .scale-row:nth-child(2) { animation: pptSlideRight 0.45s both 0.21s; }
+    body.ppt-active .slide-active .scale-row:nth-child(3) { animation: pptSlideRight 0.45s both 0.28s; }
+    body.ppt-active .slide-active .scale-row:nth-child(4) { animation: pptSlideRight 0.45s both 0.35s; }
+    body.ppt-active .slide-active .scale-row:nth-child(5) { animation: pptSlideRight 0.45s both 0.42s; }
+
+    /* Spread 6: Mission Diagram Nodes */
+    body.ppt-active .slide-active .mission-node.node-1 { animation: pptScalePop 0.5s both 0.18s; }
+    body.ppt-active .slide-active .mission-node.node-2 { animation: pptScalePop 0.5s both 0.28s; }
+    body.ppt-active .slide-active .mission-node.node-3 { animation: pptScalePop 0.5s both 0.38s; }
+    body.ppt-active .slide-active .mission-node.node-4 { animation: pptScalePop 0.5s both 0.48s; }
+
+    /* Tombol Keluar PPT Minimalis di Pojok Kanan Atas (Tanpa Capsule di Bawah) */
+    .ppt-close-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(18, 19, 22, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FCA5A5;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    body.ppt-active .ppt-close-btn {
+      display: flex !important;
+    }
+    .ppt-close-btn:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+      border-color: #EF4444;
+      transform: scale(1.1);
+    }
+
+    /* Floating Side Navigation Arrows on PPT */
+    .ppt-arrow {
+      display: none;
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(18, 19, 22, 0.65);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: white;
+      font-size: 1.35rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+    }
+    body.ppt-active .ppt-arrow {
+      display: flex !important;
+    }
+    .ppt-arrow:hover {
+      background: var(--brand-primary);
+      transform: translateY(-50%) scale(1.12);
+    }
+    .ppt-arrow-prev { left: 24px; }
+    .ppt-arrow-next { right: 24px; }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Header Terpadu di Tengah: KASKU BRAND MANUAL + Full Screen Icon Only -->
+  <header class="floating-header">
+    <div class="header-badge">KASKU BRAND MANUAL</div>
+    <div class="header-divider"></div>
+    <button class="header-fs-icon-btn" onclick="enterPPTMode()" title="Full Screen Presentation Mode">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- ==========================================
+       SPREAD 1: COVER & BACK COVER
+  ========================================== -->
+  <div class="spread-container">
+    <!-- Back Cover (Left) -->
+    <div class="page spread-1-left page-divider">
+      <div class="spread-1-left-shape"></div>
+      <div class="spread-1-left-subshape"></div>
+      <div style="position: relative; z-index: 5;">
+        <div style="font-size: 0.85rem; font-weight: 800; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 24px;">CONTACT</div>
+        <div style="font-size: 1.15rem; font-weight: 800; color: var(--navy-dark); margin-bottom: 12px;">KASKU APP CORP.</div>
+        <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 28px;">
+          Brand and Communications Department<br>
+          Fakultas Teknik, Universitas Jenderal Soedirman<br>
+          Indonesia<br><br>
+          ✉️ contact@kasku.id<br>
+          🌐 github.com/iqsanazhr/KasKu
+        </div>
+        <div style="font-size: 0.72rem; color: #9CA3AF; max-width: 320px; line-height: 1.5;">
+          All brand elements and trademarks are property of KASKU TEAM (Kelompok 2 Kelas A Pemrograman Mobile 2026). Strictly for academic and corporate brand guidelines.
+        </div>
+      </div>
+    </div>
+
+    <!-- Front Cover (Right) -->
+    <div class="page spread-1-right">
+      <div class="cover-curve-swoosh"></div>
+      <div class="cover-brand-header">
+        <img src="../app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" alt="Logo">
+        <span>KasKu</span>
+      </div>
+      <div class="cover-content-box">
+        <h1 class="cover-h1">Company</h1>
+        <h2 class="cover-h2">Brand Manual</h2>
+        <div class="cover-sub">Visual Identity | Brand Guidelines | Communication Standards</div>
+        <div class="cover-meta">Version 1.1.0 • Prepared for internal & academic release</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SPREAD 2: CONTENTS & ABOUT US (DIPERBAIKI)
+       Mockup HP Tampil Utuh dan Proporsional!
+  ========================================== -->
+  <div class="spread-container">
+    <!-- Contents (Left) -->
+    <div class="page spread-2-left page-divider">
+      <svg class="watermark-kasku" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+      </svg>
+      <div class="contents-title">Contents</div>
+      <div class="contents-divider"></div>
+      <ul class="contents-menu">
+        <li><span class="num">01.</span> About Us & Philosophy</li>
+        <li><span class="num">02.</span> Brand Identity & Core Pillars</li>
+        <li><span class="num">03.</span> Logo Guidelines & Safe Space</li>
+        <li><span class="num">04.</span> Official Color Palette Tokens</li>
+        <li><span class="num">05.</span> Typography Hierarchy Standards</li>
+        <li><span class="num">06.</span> Brand Ambition & Core Mission</li>
+      </ul>
+    </div>
+
+    <!-- About Us (Right) -->
+    <div class="page spread-2-right">
+      <!-- Mockup HP Utuh Dashboard -->
+      <div class="phone-mockup-wrapper">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="01_dashboard.png" alt="KasKu Dashboard">
+          </div>
+        </div>
+      </div>
+
+      <!-- Teks Penjelasan About Us -->
+      <div class="about-text-content">
+        <h3>About Us</h3>
+        <p>
+          <strong>KASKU</strong> adalah aplikasi manajemen arus kas cerdas generasi baru untuk platform Android yang menggabungkan kesederhanaan perbankan digital ala <em>fintech modern</em> dengan kehalusan antarmuka <em>prinsip desain humanis ergonomis</em>.
+        </p>
+        <p>
+          Dilengkapi integrasi kecerdasan buatan multimodal (Google Gemini & LM Studio) untuk membaca struk belanja fisik secara instan serta asisten penasihat keuangan personal, KasKu mengedepankan kedaulatan data privasi melalui arsitektur 100% <em>Offline-First</em> (Room SQLite).
+        </p>
+      </div>
+
+      <div class="about-curve-footer"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SPREAD 3: BRAND IDENTITY (DIPERBAIKI)
+  ========================================== -->
+  <div class="spread-container">
+    <!-- Visual Kiri (Bulat Estetis) -->
+    <div class="page spread-3-left page-divider">
+      <div class="circle-card-showcase">
+        <div class="circle-card-icon">✦</div>
+        <h4>Driven by Intelligence</h4>
+        <p>
+          "Mewujudkan ketenangan pikiran dalam setiap keputusan finansial melalui transparansi arus kas dan kecerdasan buatan terapan."
+        </p>
+      </div>
+    </div>
+
+    <!-- Teks Kanan: 3 Pilar Identitas -->
+    <div class="page spread-3-right">
+      <div class="identity-eyebrow">02 / CORE PILLARS</div>
+      <h3 class="identity-title">Brand Identity</h3>
+      <div class="identity-sub">Empowering personal financial sovereignty through modern engineering.</div>
+
+      <div class="pillar-row">
+        <div class="pillar-bullet">✦</div>
+        <div class="pillar-content">
+          <h5>Innovation & Multimodal Vision</h5>
+          <p>Otomatisasi pencatatan kas melalui pemindai CameraX OCR cerdas yang membaca struk fisik tanpa entri manual.</p>
+        </div>
+      </div>
+
+      <div class="pillar-row">
+        <div class="pillar-bullet">🔒</div>
+        <div class="pillar-content">
+          <h5>Trustworthy & Absolute Privacy</h5>
+          <p>100% data keuangan tersimpan aman di database lokal perangkat (Room SQLite). Bebas dari pelacakan pihak ketiga.</p>
+        </div>
+      </div>
+
+      <div class="pillar-row">
+        <div class="pillar-bullet">🎨</div>
+        <div class="pillar-content">
+          <h5>Aesthetic Craftsmanship</h5>
+          <p>Desain kartu Fintech Modern swipeable yang menyenangkan dipadukan dengan fluid spring physics khas desain antarmuka humanis.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SPREAD 4: LOGO GUIDELINES & BLUEPRINT
+  ========================================== -->
+  <div class="spread-container">
+    <!-- Kiri: Asal-Usul & Filosofi Logo -->
+    <div class="page spread-4-left page-divider">
+      <div class="identity-eyebrow">03 / VISUAL ASSETS</div>
+      <h3 class="identity-title" style="margin-bottom: 8px;">Logo Origin & Philosophy</h3>
+      <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px;">
+        Monogram resmi <strong>K²</strong> dirancang sebagai simbol keutuhan finansial, sains komputasi, dan komitmen privasi personal.
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px;">
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: var(--brand-tint); color: var(--brand-primary); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">K²</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--navy-dark);">Asal-Usul Nama & Simbol Kuadrat</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">
+              Paduan kata <strong>"Kas"</strong> (aliran kas) dan <strong>"Ku"</strong> (kedaulatan privasi). Superscript angka <strong>2</strong> melambangkan identitas <strong>Kelompok 2</strong> sekaligus pertumbuhan finansial eksponensial (kuadratik) melalui sinergi pemasukan dan pengeluaran terukur.
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: var(--brand-tint); color: var(--brand-primary); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">▢</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--navy-dark);">Geometri Squircle kontur kurva kontinyu</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">
+              Kurva super-ellipse kontinyu tanpa sudut tajam 90° mencerminkan keluwesan adaptasi dan perlindungan menyeluruh terhadap aset finansial pengguna.
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 28px; height: 28px; border-radius: 8px; background: var(--brand-tint); color: var(--brand-primary); font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">✦</div>
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--navy-dark);">Aksen Kubus AI & Warna Terracotta</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45;">
+              Kubus melayang kanan atas menyimbolkan asisten AI cerdas, dibalut warna <strong>Terracotta Crimson (#EB5B45)</strong> yang hangat, bersahabat, dan percaya diri.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #F9FAFB; border: 1px solid var(--gray-border); border-radius: 8px; padding: 8px 12px; font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+        <span><strong>Clear Space:</strong> Minimum 0.5X Monogram</span>
+        <span style="color: #EF4444; font-weight: 600;">✕ No stretch / tilt / color recolor</span>
+      </div>
+    </div>
+
+    <!-- Kanan: Blueprint Grid -->
+    <div class="page spread-4-right">
+      <div class="blueprint-box">
+        <div class="bp-indicator-top">0.5X SAFE CLEAR SPACE</div>
+        <div class="bp-indicator-side">0.5X CLEAR</div>
+        <img src="../app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" alt="Logo Construction" style="width: 76px; height: 76px; border-radius: 20px;">
+        <div>
+          <div style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); letter-spacing: -0.5px;">KasKu</div>
+          <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 1.5px;">SMART CASH FLOW</div>
+        </div>
+      </div>
+      <div style="margin-top: 18px; font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+        Konstruksi Geometri Monogram K2 dengan kurva squircle kontinyu kontemporer
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SPREAD 5: COLOR PALETTE & TYPOGRAPHY
+  ========================================== -->
+  <div class="spread-container">
+    <!-- Kiri: Color Palette -->
+    <div class="page spread-5-left page-divider">
+      <div class="identity-eyebrow">04 / DESIGN TOKENS</div>
+      <h3 class="identity-title" style="margin-bottom: 2px;">Color Palette</h3>
+      <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Palet resmi disesuaikan langsung dengan identitas logo KasKu.</div>
+
+      <div class="palette-group-title">Primary Colors</div>
+      <div class="swatches-grid">
+        <div class="swatch-card-mini">
+          <div class="swatch-color-rect" style="background: #EB5B45;"></div>
+          <div class="swatch-meta-name">Terracotta Red</div>
+          <div class="swatch-meta-hex">#EB5B45</div>
+        </div>
+        <div class="swatch-card-mini">
+          <div class="swatch-color-rect" style="background: #121316;"></div>
+          <div class="swatch-meta-name">Ceramic Dark</div>
+          <div class="swatch-meta-hex">#121316</div>
+        </div>
+        <div class="swatch-card-mini">
+          <div class="swatch-color-rect" style="background: #FFFFFF; border: 1px solid var(--gray-border);"></div>
+          <div class="swatch-meta-name">Pure White</div>
+          <div class="swatch-meta-hex">#FFFFFF</div>
+        </div>
+      </div>
+
+      <div class="palette-group-title">Secondary & Feedback</div>
+      <div class="swatches-grid">
+        <div class="swatch-card-mini">
+          <div class="swatch-color-rect" style="background: #FF7B66;"></div>
+          <div class="swatch-meta-name">Vibrant Coral</div>
+          <div class="swatch-meta-hex">#FF7B66</div>
+        </div>
+        <div class="swatch-card-mini">
+          <div class="swatch-color-rect" style="background: #00C853;"></div>
+          <div class="swatch-meta-name">Surplus Green</div>
+          <div class="swatch-meta-hex">#00C853</div>
+        </div>
+        <div class="swatch-card-mini">
+          <div class="swatch-color-rect" style="background: #7F52FF;"></div>
+          <div class="swatch-meta-name">Cyber AI Violet</div>
+          <div class="swatch-meta-hex">#7F52FF</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanan: Typography -->
+    <div class="page spread-5-right">
+      <div class="identity-eyebrow">05 / TYPOGRAPHY SCALE</div>
+      <h3 class="identity-title" style="margin-bottom: 2px;">Typography</h3>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Standar tipografi modern: <strong>Plus Jakarta Sans</strong> & <strong>Roboto</strong>.</div>
+
+      <div class="typo-sample-grid">
+        <div class="typo-spec-box">
+          <div class="sample-h" style="font-weight: 800;">Inter Bold</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Headlines & Display</div>
+        </div>
+        <div class="typo-spec-box">
+          <div class="sample-h" style="font-weight: 500;">Inter Regular</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Body Text & Values</div>
+        </div>
+        <div class="typo-spec-box">
+          <div class="sample-h" style="font-weight: 300;">Inter Light</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);">Captions & Labels</div>
+        </div>
+      </div>
+
+      <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;">
+        <strong>Usage Standards:</strong><br>
+        • Display Saldo: 32sp SemiBold dengan tabular monospace numerals.<br>
+        • Headlines: 20sp Bold dengan letter-spacing -0.5px.<br>
+        • Body Text: 14sp Regular dengan line-height 20sp untuk keterbacaan tinggi.
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SPREAD 6: BRAND AMBITION & MISSION (DIPERBAIKI)
+       Mockup HP Tren Analitik Tampil Utuh!
+  ========================================== -->
+  <div class="spread-container">
+    <!-- Kiri: Mockup Tren + Teks Ambisi -->
+    <div class="page spread-6-left page-divider">
+      <div class="phone-mockup-wrapper">
+        <div class="phone-mockup phone-mockup-sm">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="04_tren.png" alt="Tren KasKu">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="identity-eyebrow">06 / FUTURE AMBITION</div>
+        <h3 class="identity-title" style="margin-bottom: 8px;">Brand Ambition</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px;">
+          KasKu berambisi menjadi asisten finansial cerdas terdepan yang mendemokratisasi literasi dan ketenangan finansial bagi masyarakat Indonesia.
+        </p>
+        <div style="background: var(--brand-tint); border-left: 3px solid var(--brand-primary); padding: 10px 14px; border-radius: 6px;">
+          <div style="font-weight: 700; font-size: 0.8rem; color: var(--brand-primary);">Our Vision</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+            Menjadi standar emas aplikasi finansial personal yang memanusiakan teknologi dan melindungi privasi.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanan: Diagram Misi 4 Node Lingkaran -->
+    <div class="page spread-6-right">
+      <div class="mission-center-diagram">
+        <div class="center-mission-badge">
+          <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">OUR</div>
+          <div style="font-size: 1rem; color: var(--brand-primary); font-weight: 800;">MISSION</div>
+        </div>
+
+        <div class="mission-node node-1">
+          <div class="node-num">01</div>
+          <div>Frictionless AI Vision OCR</div>
+        </div>
+        <div class="mission-node node-2">
+          <div class="node-num">02</div>
+          <div>100% Local Room SQLite</div>
+        </div>
+        <div class="mission-node node-3">
+          <div class="node-num">03</div>
+          <div>Contextual AI Advisor</div>
+        </div>
+        <div class="mission-node node-4">
+          <div class="node-num">04</div>
+          <div>Global Multi-Currency</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; background: linear-gradient(135deg, var(--brand-dark), var(--brand-primary)); color: white; padding: 10px 20px; border-radius: 8px; font-size: 0.72rem; text-align: center; width: 100%;">
+        KasKu Team (Kelompok 2 Kelas A Pemrograman Mobile) • All Rights Reserved • 
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SPREAD 7 (BONUS): FULL APP SHOWCASE
+       Menampilkan 4 Mockup Layar Sekaligus Secara Sempurna
+  ========================================== -->
+  <div class="spread-container spread-showcase">
+    <div class="showcase-header">
+      <div>
+        <div class="identity-eyebrow">APPENDIX / APP INTERFACE</div>
+        <h3 class="identity-title" style="margin-bottom: 2px;">Production App Showcase (v1.1.0)</h3>
+        <div style="font-size: 0.82rem; color: var(--text-muted);">Empat layar antarmuka kunci KasKu ditampilkan secara utuh dan proporsional.</div>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--brand-primary); font-weight: 700;">
+        JETPACK COMPOSE • MATERIAL 3
+      </div>
+    </div>
+
+    <div class="showcase-phones-row">
+      <!-- 1. Dashboard -->
+      <div class="showcase-item">
+        <div class="phone-mockup phone-mockup-sm">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="01_dashboard.png" alt="Dashboard">
+          </div>
+        </div>
+        <div class="showcase-caption">
+          Beranda & Arus Kas
+          <span>Kartu Virtual Fintech Modern Swipeable</span>
+        </div>
+      </div>
+
+      <!-- 2. Riwayat -->
+      <div class="showcase-item">
+        <div class="phone-mockup phone-mockup-sm">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="02_riwayat.png" alt="Riwayat">
+          </div>
+        </div>
+        <div class="showcase-caption">
+          Riwayat & Mutasi
+          <span>Pencarian Cerdas Reaktif</span>
+        </div>
+      </div>
+
+      <!-- 3. Scan OCR -->
+      <div class="showcase-item">
+        <div class="phone-mockup phone-mockup-sm">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="03_scan.png" alt="CameraX Scan">
+          </div>
+        </div>
+        <div class="showcase-caption">
+          Pindai Struk AI
+          <span>CameraX Multimodal Vision</span>
+        </div>
+      </div>
+
+      <!-- 4. Chat AI -->
+      <div class="showcase-item">
+        <div class="phone-mockup phone-mockup-sm">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="06_chat_ai.png" alt="Chat AI">
+          </div>
+        </div>
+        <div class="showcase-caption">
+          KasKu AI Assistant
+          <span>Penasihat Finansial Adaptif</span>
+        </div>
+      </div>
+    </div>
+  <!-- Floating Side Navigation Arrows on PPT Mode -->
+  <button class="ppt-arrow ppt-arrow-prev" onclick="prevSlide()" title="Slide Sebelumnya (← / PageUp)">❮</button>
+  <button class="ppt-arrow ppt-arrow-next" onclick="nextSlide()" title="Slide Berikutnya (→ / Spasi / PageDown)">❯</button>
+
+  <!-- Tombol Keluar PPT Minimalis di Pojok Kanan Atas -->
+  <button class="ppt-close-btn" onclick="exitPPTMode()" title="Keluar Mode Presentasi (Esc)">✕</button>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.spread-container');
+    const totalSlides = slides.length;
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        if (idx === currentSlide) {
+          s.classList.remove('slide-active');
+          void s.offsetWidth; // Force reflow agar animasi CSS terulang
+          s.classList.add('slide-active');
+        } else {
+          s.classList.remove('slide-active');
+        }
+      });
+      scaleSlide();
+    }
+
+    function scaleSlide() {
+      if (!document.body.classList.contains('ppt-active')) return;
+      const activeSlide = slides[currentSlide];
+      if (!activeSlide) return;
+      
+      const horizontalReserved = 130; // Ruang panah navigasi kiri-kanan
+      const verticalReserved = 50; // Ruang napas vertikal atas-bawah
+      const availW = Math.max(window.innerWidth - horizontalReserved, 300);
+      const availH = Math.max(window.innerHeight - verticalReserved, 200);
+      const baseW = 1240;
+      const baseH = 620;
+      const scale = Math.min(availW / baseW, availH / baseH, 1.45);
+      activeSlide.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+
+    window.addEventListener('resize', scaleSlide);
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function enterPPTMode() {
+      document.body.classList.add('ppt-active');
+      currentSlide = 0;
+      updateSlide();
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }
+
+    function exitPPTMode() {
+      document.body.classList.remove('ppt-active');
+      slides.forEach(s => {
+        s.classList.remove('slide-active');
+        s.style.transform = '';
+      });
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Keyboard Navigation (Panah Kiri, Kanan, Spasi, PageUp, PageDown, Esc)
+    document.addEventListener('keydown', (e) => {
+      if (document.body.classList.contains('ppt-active')) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          nextSlide();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          prevSlide();
+        } else if (e.key === 'Escape') {
+          exitPPTMode();
+        }
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && document.body.classList.contains('ppt-active')) {
+        exitPPTMode();
+      }
+    });
+  </script>
+</body>
+</html>
