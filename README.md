@@ -42,54 +42,73 @@
   </a>
 </p>
 
----
+<div align="center">
+  <a href="docs/KasKu_Brand_Manual_Viewer.html">
+    <img src="docs/brand_book_grid_showcase.png" alt="KasKu Brand Manual Presentation Grid Showcase" width="100%" style="border-radius: 16px; box-shadow: 0 16px 45px rgba(0,0,0,0.12);"/>
+  </a>
+</div>
 
-### 📑 Slide 1 / 7 — Cover & Back Cover
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_01.png" alt="Slide 1 - Cover & Back Cover" width="100%"/>
-</a>
+<br/>
 
----
-
-### 📑 Slide 2 / 7 — Table of Contents & About Us
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_02.png" alt="Slide 2 - Table of Contents & About Us" width="100%"/>
-</a>
-
----
-
-### 📑 Slide 3 / 7 — Brand Identity & Value Pillars ($K^2$)
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_03.png" alt="Slide 3 - Brand Identity & Value Pillars" width="100%"/>
-</a>
-
----
-
-### 📑 Slide 4 / 7 — Color Palette & Logo Construction Guidelines
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_04.png" alt="Slide 4 - Color Palette & Logo Construction Guidelines" width="100%"/>
-</a>
-
----
-
-### 📑 Slide 5 / 7 — Typography System & Scale Hierarchy
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_05.png" alt="Slide 5 - Typography System & Scale Hierarchy" width="100%"/>
-</a>
-
----
-
-### 📑 Slide 6 / 7 — Brand Philosophy, Vision & Mission Diagram
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_06.png" alt="Slide 6 - Brand Philosophy, Vision & Mission Diagram" width="100%"/>
-</a>
-
----
-
-### 📑 Slide 7 / 7 — Production App Showcase (4 Screens)
-<a href="docs/KasKu_Brand_Manual_Viewer.html">
-  <img src="docs/slides/slide_07.png" alt="Slide 7 - Production App Showcase" width="100%"/>
-</a>
+<table border="0" width="100%">
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_01.png" alt="Slide 1 - Cover" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 1</strong>: Cover & Back Cover</sub>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_02.png" alt="Slide 2 - About Us" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 2</strong>: Table of Contents & About Us</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_03.png" alt="Slide 3 - Brand Identity" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 3</strong>: Brand Identity & Value Pillars ($K^2$)</sub>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_04.png" alt="Slide 4 - Color & Logo" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 4</strong>: Color Palette & Logo Construction</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_05.png" alt="Slide 5 - Typography" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 5</strong>: Typography System & Scale</sub>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_06.png" alt="Slide 6 - Mission" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 6</strong>: Brand Philosophy & Mission Diagram</sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center" valign="top">
+      <a href="docs/KasKu_Brand_Manual_Viewer.html">
+        <img src="docs/slides/slide_07.png" alt="Slide 7 - Production Showcase" width="100%"/>
+      </a>
+      <br/>
+      <sub><strong>Slide 7</strong>: Production App Interface Showcase (4 Key Screens)</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
