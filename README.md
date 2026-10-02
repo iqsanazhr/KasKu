@@ -22,70 +22,74 @@
 
 ---
 
-## 🍱 KasKu Bento Grid System & Brand Manual
+## 🎨 KasKu Corporate Brand Manual & Presentation Deck (v1.1.0)
 
-<table>
-  <tr>
-    <td colspan="2" align="center" style="background: #F8F9FA; padding: 20px;">
-      <a href="docs/KasKu_Brand_Manual_Viewer.html">
-        <img src="docs/brand_manual_preview.png" alt="KasKu Brand Manual Presentation Preview" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.12);"/>
-      </a>
-      <br/><br/>
-      <h3>🎨 KasKu Corporate Brand Manual & Interactive PPT Deck (v1.1.0)</h3>
-      <p align="center">
-        Dokumen panduan identitas visual resmi 2-page landscape spread yang memuat filosofi logo $K^2$, palet warna <i>Terracotta Crimson</i> (<code>#EB5B45</code>), tipografi <i>Plus Jakarta Sans</i>, arsitektur antarmuka, hingga showcase produksi.
-      </p>
-      <p align="center">
-        <a href="docs/KasKu_Brand_Manual_Viewer.html">
-          <img src="https://img.shields.io/badge/🖥️_Interactive_Web_Viewer-Full_Screen_(PPT_Mode)-EB5B45?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Interactive Web Viewer"/>
-        </a>
-        &nbsp;
-        <a href="docs/KasKu_Brand_Manual_Landscape.pdf">
-          <img src="https://img.shields.io/badge/📥_Download_Official_PDF-Landscape_2%3A1_(2.25_MB)-1F2937?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Download PDF"/>
-        </a>
-        &nbsp;
-        <a href="docs/BRANDING_COMPANY_BOOK.md">
-          <img src="https://img.shields.io/badge/📖_Brand_Guidelines-Markdown_Spec-4B5563?style=for-the-badge&logo=markdown&logoColor=white" alt="Markdown Spec"/>
-        </a>
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h4>🏷️ Identitas & Nilai Inti ($K^2$)</h4>
-      <ul>
-        <li><strong>Pertumbuhan Kuadratik ($K^2$)</strong>: Huruf "K" berpangkat dua merepresentasikan lompatan eksponensial dalam keteraturan finansial pribadi.</li>
-        <li><strong>Terracotta Crimson (<code>#EB5B45</code>)</strong>: Menghilangkan kesan kaku perbankan tradisional dengan warna hangat, dinamis, dan energik.</li>
-        <li><strong>Human-Centered Design</strong>: Ergonomi satu tangan dengan kurva membulat dan dynamic floating navigation.</li>
-      </ul>
-    </td>
-    <td width="50%" valign="top">
-      <h4>🧠 Dual Multimodal AI Engine</h4>
-      <ul>
-        <li><strong>CameraX Smart Vision OCR</strong>: Deteksi struk instan berbasis Google Gemini 2.5/3.6/3.8 Flash untuk parsing otomatis nama merchant, tanggal, rincian barang, dan total nominal.</li>
-        <li><strong>Offline Local LLM (LM Studio)</strong>: Pilihan privat untuk menjalankan model bahasa lokal via endpoint HTTP lokal tanpa transmisi data ke cloud luar.</li>
-        <li><strong>Grounding Valas Real-Time</strong>: Asisten AI terhubung ke live endpoint REST API kurs 9 valuta asing.</li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h4>🛡️ 100% Offline-First Sovereignty</h4>
-      <ul>
-        <li><strong>Zero Network Dependency</strong>: Seluruh transaksi, dompet, dan histori tersimpan di database lokal Room SQLite.</li>
-        <li><strong>0ms Query Latency</strong>: Akses instan tanpa jeda loading server cloud.</li>
-        <li><strong>Kedaulatan Data Privasi</strong>: Riwayat belanja Anda sepenuhnya milik Anda sendiri.</li>
-      </ul>
-    </td>
-    <td width="50%" valign="top">
-      <h4>💱 Multi-Currency & Live REST API</h4>
-      <ul>
-        <li><strong>9 Mata Uang Global</strong>: IDR (Rp), USD ($), EUR (€), SGD (S$), MYR (RM), JPY (¥), GBP (£), AUD (A$), SAR (SR).</li>
-        <li><strong>Live Currency Converter</strong>: Terintegrasi dengan endpoint REST API <code>open.er-api.com</code> berarsitektur <code>UiState</code> reaktif.</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+> **Panduan Identitas Visual & Dokumen Presentasi Resmi (Full Slide Deck)**.  
+> Klik pada gambar slide mana pun untuk membuka penampil interaktif dengan animasi dan mode presentasi layar penuh:  
+> [🖥️ **Buka Interactive Web Viewer (Full Screen PPT Mode)**](docs/KasKu_Brand_Manual_Viewer.html) &bull; [📥 **Unduh PDF Resmi (2.25 MB)**](docs/KasKu_Brand_Manual_Landscape.pdf) &bull; [📖 **Spesifikasi Dokumen Markdown**](docs/BRANDING_COMPANY_BOOK.md)
+
+<p align="center">
+  <a href="docs/KasKu_Brand_Manual_Viewer.html">
+    <img src="https://img.shields.io/badge/🖥️_Interactive_Web_Viewer-Full_Screen_(PPT_Mode)-EB5B45?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Interactive Web Viewer"/>
+  </a>
+  &nbsp;
+  <a href="docs/KasKu_Brand_Manual_Landscape.pdf">
+    <img src="https://img.shields.io/badge/📥_Download_Official_PDF-Landscape_2%3A1_(2.25_MB)-1F2937?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Download PDF"/>
+  </a>
+  &nbsp;
+  <a href="docs/BRANDING_COMPANY_BOOK.md">
+    <img src="https://img.shields.io/badge/📖_Brand_Guidelines-Markdown_Spec-4B5563?style=for-the-badge&logo=markdown&logoColor=white" alt="Markdown Spec"/>
+  </a>
+</p>
+
+---
+
+### 📑 Slide 1 / 7 — Cover & Back Cover
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_01.png" alt="Slide 1 - Cover & Back Cover" width="100%"/>
+</a>
+
+---
+
+### 📑 Slide 2 / 7 — Table of Contents & About Us
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_02.png" alt="Slide 2 - Table of Contents & About Us" width="100%"/>
+</a>
+
+---
+
+### 📑 Slide 3 / 7 — Brand Identity & Value Pillars ($K^2$)
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_03.png" alt="Slide 3 - Brand Identity & Value Pillars" width="100%"/>
+</a>
+
+---
+
+### 📑 Slide 4 / 7 — Color Palette & Logo Construction Guidelines
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_04.png" alt="Slide 4 - Color Palette & Logo Construction Guidelines" width="100%"/>
+</a>
+
+---
+
+### 📑 Slide 5 / 7 — Typography System & Scale Hierarchy
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_05.png" alt="Slide 5 - Typography System & Scale Hierarchy" width="100%"/>
+</a>
+
+---
+
+### 📑 Slide 6 / 7 — Brand Philosophy, Vision & Mission Diagram
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_06.png" alt="Slide 6 - Brand Philosophy, Vision & Mission Diagram" width="100%"/>
+</a>
+
+---
+
+### 📑 Slide 7 / 7 — Production App Showcase (4 Screens)
+<a href="docs/KasKu_Brand_Manual_Viewer.html">
+  <img src="docs/slides/slide_07.png" alt="Slide 7 - Production App Showcase" width="100%"/>
+</a>
 
 ---
 
