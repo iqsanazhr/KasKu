@@ -24,10 +24,6 @@
 
 ## 🎨 KasKu Corporate Brand Manual & Presentation Deck (v1.1.0)
 
-> **Panduan Identitas Visual & Dokumen Presentasi Resmi (Full Slide Deck)**.  
-> Klik pada gambar slide mana pun untuk membuka penampil interaktif dengan animasi dan mode presentasi layar penuh:  
-> [🖥️ **Buka Interactive Web Viewer (Full Screen PPT Mode)**](docs/KasKu_Brand_Manual_Viewer.html) &bull; [📥 **Unduh PDF Resmi (2.25 MB)**](docs/KasKu_Brand_Manual_Landscape.pdf) &bull; [📖 **Spesifikasi Dokumen Markdown**](docs/BRANDING_COMPANY_BOOK.md)
-
 <p align="center">
   <a href="docs/KasKu_Brand_Manual_Viewer.html">
     <img src="https://img.shields.io/badge/🖥️_Interactive_Web_Viewer-Full_Screen_(PPT_Mode)-EB5B45?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Interactive Web Viewer"/>
